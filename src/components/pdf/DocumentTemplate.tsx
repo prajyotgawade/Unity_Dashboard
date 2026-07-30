@@ -8,159 +8,189 @@ const styles = StyleSheet.create({
     padding: 30,
     fontFamily: 'Helvetica',
     fontSize: 10,
-    color: '#1f2937', // gray-800
+    color: '#000000',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#d1d5db',
-    paddingBottom: 10,
+  headerContainer: {
+    position: 'relative',
+    width: '100%',
+    marginBottom: 5,
   },
-  headerLeft: {
-    flex: 1,
-  },
-  headerRight: {
-    width: 100,
-    alignItems: 'flex-end',
-  },
-  logo: {
+  logoBox: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
     width: 80,
     height: 80,
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
     objectFit: 'contain',
   },
+  centerHeader: {
+    alignItems: 'center',
+    paddingLeft: 80, // Leave space for logo
+    paddingRight: 20,
+    minHeight: 80,
+    justifyContent: 'center',
+  },
   businessName: {
-    fontSize: 20,
+    fontSize: 24,
     fontFamily: 'Helvetica-Bold',
-    color: '#1e3a8a', // Deep Blue
-    marginBottom: 4,
+    color: '#425C7A', // Slate Blue color matching the image
+    marginBottom: 6,
+    textTransform: 'uppercase',
   },
   headerText: {
     fontSize: 9,
     marginBottom: 2,
-    color: '#4b5563',
+    color: '#000000',
   },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
+  headerLine: {
+    width: '100%',
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#425C7A',
+    marginBottom: 15,
+    marginTop: 5,
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'Helvetica-Bold',
-    textTransform: 'uppercase',
-    textDecoration: 'underline',
-  },
-  metaGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    textAlign: 'center',
     marginBottom: 20,
   },
-  metaCol: {
-    flex: 1,
+  topGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  topLeft: {
+    width: '50%',
+  },
+  topRight: {
+    width: '40%',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    marginBottom: 3,
   },
   metaLabel: {
     fontFamily: 'Helvetica-Bold',
-    fontSize: 9,
+    width: 65,
+  },
+  metaValue: {
+    flex: 1,
+  },
+  subjectLine: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  subjectLabel: {
+    fontFamily: 'Helvetica-Bold',
+  },
+  subjectValue: {
+    fontFamily: 'Helvetica-Bold',
+    flex: 1,
   },
   table: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: '#000000',
     marginBottom: 20,
   },
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#d1d5db',
+    borderBottomColor: '#000000',
   },
   tableHeader: {
-    backgroundColor: '#f3f4f6',
     fontFamily: 'Helvetica-Bold',
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
   },
   tableCell: {
     padding: 5,
     borderRightWidth: 1,
-    borderRightColor: '#d1d5db',
+    borderRightColor: '#000000',
     fontSize: 9,
+    justifyContent: 'center',
   },
-  colSr: { width: '8%' },
+  colSr: { width: '8%', textAlign: 'center' },
   colDesc: { flex: 1 },
-  colQty: { width: '12%', textAlign: 'right' },
-  colUnit: { width: '12%', textAlign: 'center' },
-  colRate: { width: '15%', textAlign: 'right' },
-  colAmt: { width: '20%', textAlign: 'right' },
-  colMake: { width: '15%' },
+  colMake: { width: '12%', textAlign: 'center' },
+  colQty: { width: '10%', textAlign: 'center' },
+  colUnit: { width: '10%', textAlign: 'center' },
+  colRate: { width: '14%', textAlign: 'center' },
+  colAmt: { width: '16%', textAlign: 'center', borderRightWidth: 0 },
   
-  totalsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginBottom: 20,
-  },
-  totalsBox: {
-    width: '40%',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-  },
+  colRateAlignRight: { width: '14%', textAlign: 'right' },
+  colAmtAlignRight: { width: '16%', textAlign: 'right', borderRightWidth: 0 },
+
   totalRow: {
     flexDirection: 'row',
-    padding: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#d1d5db',
   },
-  totalLabel: {
+  totalLabelBox: {
     flex: 1,
-    fontFamily: 'Helvetica-Bold',
+    padding: 5,
+    borderRightWidth: 1,
+    borderRightColor: '#000000',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
-  totalValue: {
-    width: '40%',
+  totalAmountBox: {
+    width: '16%',
+    padding: 5,
     textAlign: 'right',
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 9,
   },
-  bankDetails: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    padding: 10,
-    marginBottom: 20,
-    width: '50%',
-  },
-  terms: {
-    marginBottom: 40,
+  termsBox: {
+    marginBottom: 30,
   },
   signatureBlock: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 40,
+    justifyContent: 'flex-end',
+    marginTop: 20,
+    marginBottom: 40,
   },
   signatureBox: {
     alignItems: 'center',
     width: 200,
   },
   stampImage: {
-    width: 120,
-    height: 80,
+    width: 140,
+    height: 60,
     objectFit: 'contain',
-    marginBottom: 5,
+    marginVertical: 10,
+  },
+  footerLine: {
+    position: 'absolute',
+    bottom: 50,
+    left: 30,
+    right: 30,
+    borderTopWidth: 1.5,
+    borderTopColor: '#425C7A',
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 20,
     left: 30,
     right: 30,
     textAlign: 'center',
-    fontSize: 8,
-    color: '#6b7280',
-    borderTopWidth: 1,
-    borderTopColor: '#d1d5db',
-    paddingTop: 10,
+    fontSize: 9,
+    color: '#000000',
   },
+  footerLineText: {
+    marginBottom: 5,
+  }
 })
 
 export const DocumentTemplate = ({ document, settings, client, supplier, lines }: any) => {
-  const isInvoiceOrPO = document.type === 'invoice' || document.type === 'po'
-  const isQuotation = document.type === 'quotation'
+  const isInvoice = document.type === 'invoice'
   const isPO = document.type === 'po'
   const isDC = document.type === 'dc'
   const isWCC = document.type === 'wcc'
+  const isQuotation = document.type === 'quotation'
 
   const getTitle = () => {
     switch (document.type) {
@@ -173,110 +203,206 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
     }
   }
 
-  const targetContact = document.type === 'po' ? supplier : client
+  const targetContact = isPO ? supplier : client
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.businessName}>{settings.business_name}</Text>
-            <Text style={styles.headerText}>Mumbai Office: {settings.mumbai_office_address}</Text>
-            <Text style={styles.headerText}>Contact no: {settings.contact_numbers}</Text>
-            <Text style={styles.headerText}>Email: {document.type === 'invoice' ? settings.email_invoice : settings.email_other}</Text>
-          </View>
+        
+        {/* Header Block */}
+        <View style={styles.headerContainer}>
           {settings.logo_url && (
-            <View style={styles.headerRight}>
+            <View style={styles.logoBox}>
               <Image src={settings.logo_url} style={styles.logo} />
             </View>
           )}
+          <View style={styles.centerHeader}>
+            <Text style={styles.businessName}>{settings.business_name}</Text>
+            <Text style={styles.headerText}>Mumbai Office: - {settings.mumbai_office_address}</Text>
+            <Text style={styles.headerText}>
+              Email ID- {document.type === 'invoice' ? settings.email_invoice : settings.email_other}, Contact no: - {settings.contact_numbers}
+            </Text>
+          </View>
         </View>
+        
+        <View style={styles.headerLine} />
 
         {/* Title */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{getTitle()}</Text>
-          {isWCC && <Text style={{ fontSize: 10, marginTop: 4 }}>TO WHOM SO EVER IT MAY CONCERN</Text>}
-        </View>
+        <Text style={styles.title}>{getTitle()}</Text>
 
-        {/* Meta Grid */}
-        <View style={styles.metaGrid}>
-          {isPO ? (
-            <>
-               <View style={styles.metaCol}>
-                  <Text style={styles.metaLabel}>Supplier Name & Address:</Text>
-                  <Text>{supplier?.name}</Text>
-                  <Text>{supplier?.address}</Text>
-                  <Text>GST No: {supplier?.gstin || 'N/A'}</Text>
-               </View>
-               <View style={styles.metaCol}>
-                  <Text style={styles.metaLabel}>Buyer Name & Address:</Text>
-                  <Text>{settings.business_name}</Text>
-                  <Text>{settings.mumbai_office_address}</Text>
-                  <Text>GSTIN: {settings.gstin}</Text>
-               </View>
-            </>
-          ) : isWCC ? (
-             <View style={styles.metaCol}>
-                 <Text><Text style={styles.metaLabel}>Name of Client: </Text>{client?.name}</Text>
-                 <Text><Text style={styles.metaLabel}>Name of work/Project: </Text>{document.subject || '-'}</Text>
-                 <Text><Text style={styles.metaLabel}>Work Order Number: </Text>{document.reference_number || '-'}</Text>
-                 <Text><Text style={styles.metaLabel}>Work Order Date: </Text>{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
-                 <Text><Text style={styles.metaLabel}>Work Order Value: </Text>{document.metadata?.work_order_value || '-'}</Text>
-                 <Text><Text style={styles.metaLabel}>Work Period: </Text>{document.metadata?.work_period || '-'}</Text>
-             </View>
-          ) : (
-            <>
-              <View style={styles.metaCol}>
-                <Text style={styles.metaLabel}>{document.type === 'invoice' ? 'Bill to:' : document.type === 'dc' ? 'Ship To:' : 'To:'}</Text>
-                <Text style={{ fontFamily: 'Helvetica-Bold', marginTop: 2 }}>{client?.name}</Text>
-                <Text>{client?.address}</Text>
-                {client?.gstin && <Text>GSTIN: {client.gstin}</Text>}
-                {client?.kind_attention && <Text>Kind Attention: {client.kind_attention}</Text>}
-              </View>
-              <View style={styles.metaCol}>
-                <Text><Text style={styles.metaLabel}>No: </Text>{document.document_number}</Text>
-                <Text><Text style={styles.metaLabel}>Date: </Text>{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
+        {/* Top Details Grid */}
+        <View style={styles.topGrid}>
+          {/* Left Side (To Address) */}
+          <View style={styles.topLeft}>
+            {!isPO && !isWCC && (
+              <>
+                <Text style={{ marginBottom: 3 }}>To,</Text>
+                {client?.name && <Text style={{ marginBottom: 2 }}>{client.name}</Text>}
+                {client?.address && <Text style={{ marginBottom: 2 }}>{client.address}</Text>}
+                {client?.kind_attention && <Text style={{ marginBottom: 2 }}>Kind Attention- {client.kind_attention}</Text>}
+                {client?.gstin && <Text style={{ marginTop: 2 }}>GSTIN: {client.gstin}</Text>}
+              </>
+            )}
+            
+            {isPO && (
+              <>
+                <Text style={{ marginBottom: 3 }}>To,</Text>
+                {supplier?.name && <Text style={{ marginBottom: 2 }}>{supplier.name}</Text>}
+                {supplier?.address && <Text style={{ marginBottom: 2 }}>{supplier.address}</Text>}
+                {supplier?.gstin && <Text style={{ marginTop: 2 }}>GST No: {supplier.gstin}</Text>}
+              </>
+            )}
+
+            {isWCC && (
+              <>
+                 <View style={styles.metaRow}>
+                   <Text style={[styles.metaLabel, { width: 90 }]}>Name of Client: </Text>
+                   <Text style={styles.metaValue}>{client?.name}</Text>
+                 </View>
+                 <View style={styles.metaRow}>
+                   <Text style={[styles.metaLabel, { width: 90 }]}>Work Order No: </Text>
+                   <Text style={styles.metaValue}>{document.reference_number || '-'}</Text>
+                 </View>
+                 <View style={styles.metaRow}>
+                   <Text style={[styles.metaLabel, { width: 90 }]}>Work Order Date: </Text>
+                   <Text style={styles.metaValue}>{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
+                 </View>
+              </>
+            )}
+          </View>
+
+          {/* Right Side (Dates & Refs) */}
+          <View style={styles.topRight}>
+            {!isWCC && (
+              <>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Date:</Text>
+                  <Text style={styles.metaValue}>- {format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>{isPO ? 'PO No:' : isInvoice ? 'Invoice No:' : isDC ? 'Challan No:' : 'Quotation:'}</Text>
+                  <Text style={styles.metaValue}>- {document.document_number}</Text>
+                </View>
                 {document.reference_number && (
-                  <Text><Text style={styles.metaLabel}>Ref: </Text>{document.reference_number}</Text>
+                  <View style={styles.metaRow}>
+                    <Text style={styles.metaLabel}>Ref:</Text>
+                    <Text style={styles.metaValue}>- {document.reference_number}</Text>
+                  </View>
                 )}
-              </View>
-            </>
-          )}
+              </>
+            )}
+            
+            {isWCC && (
+              <>
+                 <View style={styles.metaRow}>
+                   <Text style={[styles.metaLabel, { width: 90 }]}>WO Value: </Text>
+                   <Text style={styles.metaValue}>{document.metadata?.work_order_value || '-'}</Text>
+                 </View>
+                 <View style={styles.metaRow}>
+                   <Text style={[styles.metaLabel, { width: 90 }]}>Work Period: </Text>
+                   <Text style={styles.metaValue}>{document.metadata?.work_period || '-'}</Text>
+                 </View>
+              </>
+            )}
+          </View>
         </View>
 
-        {document.subject && !isWCC && (
-          <View style={{ marginBottom: 15 }}>
-            <Text><Text style={styles.metaLabel}>Subject: </Text>{document.subject}</Text>
+        {/* Subject */}
+        {document.subject && (
+          <View style={styles.subjectLine}>
+            <Text style={styles.subjectLabel}>Sub: </Text>
+            <Text style={styles.subjectValue}>{document.subject}</Text>
           </View>
         )}
 
         {isWCC && <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>1. Material Installed</Text>}
 
-        {/* Table */}
+        {/* Items Table */}
         <View style={styles.table}>
+          {/* Table Header */}
           <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={[styles.tableCell, styles.colSr]}>Sr No</Text>
-            <Text style={[styles.tableCell, styles.colDesc]}>Description</Text>
+            <Text style={[styles.tableCell, styles.colSr]}>Sr.{"\n"}No</Text>
+            <Text style={[styles.tableCell, styles.colDesc, { textAlign: 'center' }]}>Description</Text>
             {isWCC && <Text style={[styles.tableCell, styles.colMake]}>Make</Text>}
             <Text style={[styles.tableCell, styles.colQty]}>Quantity</Text>
             <Text style={[styles.tableCell, styles.colUnit]}>Unit</Text>
-            {!isDC && !isWCC && <Text style={[styles.tableCell, styles.colRate]}>Rate (Rs)</Text>}
-            {!isDC && !isWCC && <Text style={[styles.tableCell, styles.colAmt, { borderRightWidth: 0 }]}>Amount (Rs)</Text>}
+            
+            {/* Conditional Columns */}
+            {!isDC && !isWCC && (
+              <>
+                <Text style={[styles.tableCell, styles.colRate]}>Rate per{"\n"}unit (Rs.)</Text>
+                {isInvoice && <Text style={[styles.tableCell, { width: '8%', textAlign: 'center' }]}>GST%</Text>}
+                <Text style={[styles.tableCell, styles.colAmt]}>Total{"\n"}Amount{"\n"}(Rs.)</Text>
+              </>
+            )}
           </View>
-          
+
+          {/* Table Body */}
           {lines.map((line: any, index: number) => (
             <View key={index} style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.colSr]}>{index + 1}</Text>
-              <Text style={[styles.tableCell, styles.colDesc]}>{line.description}</Text>
+              <Text style={[styles.tableCell, styles.colDesc, { textAlign: 'left' }]}>{line.description}</Text>
               {isWCC && <Text style={[styles.tableCell, styles.colMake]}>{line.make || '-'}</Text>}
               <Text style={[styles.tableCell, styles.colQty]}>{line.quantity}</Text>
               <Text style={[styles.tableCell, styles.colUnit]}>{line.unit}</Text>
-              {!isDC && !isWCC && <Text style={[styles.tableCell, styles.colRate]}>{line.rate?.toFixed(2)}</Text>}
-              {!isDC && !isWCC && <Text style={[styles.tableCell, styles.colAmt, { borderRightWidth: 0 }]}>{line.amount?.toFixed(2)}</Text>}
+              
+              {!isDC && !isWCC && (
+                <>
+                  <Text style={[styles.tableCell, styles.colRateAlignRight]}>{line.rate?.toFixed(2)}</Text>
+                  {isInvoice && <Text style={[styles.tableCell, { width: '8%', textAlign: 'center' }]}>{line.gst_rate || 18}%</Text>}
+                  <Text style={[styles.tableCell, styles.colAmtAlignRight]}>{line.amount?.toFixed(2)}</Text>
+                </>
+              )}
             </View>
           ))}
+
+          {/* Table Footer Totals */}
+          {!isDC && !isWCC && (
+            <>
+              {/* Subtotal Row */}
+              <View style={[styles.totalRow, (isInvoice || isPO) ? { borderBottomWidth: 1, borderBottomColor: '#000000' } : {}]}>
+                <View style={styles.totalLabelBox}>
+                  <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
+                    {(isInvoice || isPO) ? 'Sub Total Amount (Rs.)' : 'Total Amount (Rs.)'}
+                  </Text>
+                </View>
+                <Text style={styles.totalAmountBox}>{document.subtotal?.toFixed(2)}</Text>
+              </View>
+
+              {/* Tax Rows for Invoices / PO */}
+              {(isInvoice || isPO) && (
+                <>
+                  <View style={[styles.totalRow, { borderBottomWidth: 1, borderBottomColor: '#000000' }]}>
+                    <View style={styles.totalLabelBox}>
+                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>Add: CGST</Text>
+                    </View>
+                    <Text style={styles.totalAmountBox}>{document.cgst?.toFixed(2)}</Text>
+                  </View>
+                  <View style={[styles.totalRow, { borderBottomWidth: 1, borderBottomColor: '#000000' }]}>
+                    <View style={styles.totalLabelBox}>
+                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>Add: SGST</Text>
+                    </View>
+                    <Text style={styles.totalAmountBox}>{document.sgst?.toFixed(2)}</Text>
+                  </View>
+                  <View style={styles.totalRow}>
+                    <View style={styles.totalLabelBox}>
+                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>Grand Total Amount (Rs.)</Text>
+                    </View>
+                    <Text style={styles.totalAmountBox}>{document.total?.toFixed(2)}</Text>
+                  </View>
+                </>
+              )}
+            </>
+          )}
         </View>
+
+        {/* Amount in Words */}
+        {(isInvoice || isPO) && (
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontFamily: 'Helvetica-Bold' }}>Amount in words:</Text>
+            <Text>{numberToWordsIndian(document.total)}</Text>
+          </View>
+        )}
 
         {isWCC && (
           <View style={{ marginBottom: 20 }}>
@@ -285,45 +411,17 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
           </View>
         )}
 
-        {/* Totals */}
-        {!isDC && !isWCC && (
-          <View style={styles.totalsContainer}>
-            <View style={styles.totalsBox}>
-              {isInvoiceOrPO && (
-                <>
-                  <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>Total Amount</Text>
-                    <Text style={styles.totalValue}>{document.subtotal?.toFixed(2)}</Text>
-                  </View>
-                  <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>Total CGST</Text>
-                    <Text style={styles.totalValue}>{document.cgst?.toFixed(2)}</Text>
-                  </View>
-                  <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>Total SGST</Text>
-                    <Text style={styles.totalValue}>{document.sgst?.toFixed(2)}</Text>
-                  </View>
-                </>
-              )}
-              <View style={[styles.totalRow, { borderBottomWidth: 0, backgroundColor: '#f3f4f6' }]}>
-                <Text style={styles.totalLabel}>Grand Total (Rs)</Text>
-                <Text style={styles.totalValue}>{document.total?.toFixed(2)}</Text>
-              </View>
-            </View>
+        {/* Terms & Conditions */}
+        {document.metadata?.terms && !isWCC && (
+          <View style={styles.termsBox}>
+            <Text style={{ fontFamily: 'Helvetica', marginBottom: 5 }}>Terms &amp; conditions:</Text>
+            <Text>{document.metadata.terms}</Text>
           </View>
         )}
 
-        {/* Amount in words */}
-        {document.type === 'invoice' && (
+        {/* Bank Details for Invoice */}
+        {isInvoice && (
           <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontFamily: 'Helvetica-Bold' }}>Amount in words:</Text>
-            <Text>{numberToWordsIndian(document.total)}</Text>
-          </View>
-        )}
-
-        {/* Bank Details */}
-        {document.type === 'invoice' && (
-          <View style={styles.bankDetails}>
             <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>Bank Account Details:</Text>
             <Text>Bank Name: {settings.bank_name}</Text>
             <Text>Account No: {settings.bank_account_no}</Text>
@@ -331,48 +429,25 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
           </View>
         )}
 
-        {/* PO Delivery Details */}
-        {isPO && (
-          <View style={{ marginBottom: 20 }}>
-            <Text><Text style={styles.metaLabel}>Delivery Location: </Text>{document.metadata?.delivery_location || '-'}</Text>
-            <Text><Text style={styles.metaLabel}>Delivery Date: </Text>{document.metadata?.delivery_date ? format(new Date(document.metadata.delivery_date), 'dd/MM/yyyy') : '-'}</Text>
-          </View>
-        )}
-
-        {/* Terms */}
-        {document.metadata?.terms && !isWCC && (
-          <View style={styles.terms}>
-            <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>Terms &amp; Conditions:</Text>
-            <Text>{document.metadata.terms}</Text>
-          </View>
-        )}
-
-        {isWCC && (
-          <View style={{ marginBottom: 20 }}>
-             <Text>This is to certify that Unity Enterprises has successfully completed work as per the work order.</Text>
-             <Text style={{ marginTop: 5 }}>The work is completed on {format(new Date(), 'dd/MM/yyyy')}</Text>
-          </View>
-        )}
-
         {/* Signatures */}
         <View style={styles.signatureBlock}>
           <View style={styles.signatureBox}>
-            <Text style={{ marginBottom: 40, fontFamily: 'Helvetica-Bold' }}>{isWCC ? 'Unity Enterprises' : 'Receiver\'s Signature'}</Text>
-          </View>
-          <View style={styles.signatureBox}>
-            <Text style={{ marginBottom: 5 }}>Thanks &amp; Regards,</Text>
-            <Text style={{ fontFamily: 'Helvetica-Bold' }}>For {settings.business_name}</Text>
-            {settings.signature_url && (
+            <Text style={{ marginBottom: 5 }}>Thanks &amp; Regards</Text>
+            {settings.signature_url ? (
               <Image src={settings.signature_url} style={styles.stampImage} />
+            ) : (
+              <View style={{ height: 60 }} />
             )}
-            <Text>Authorised Signatory</Text>
+            <Text>Unity Enterprises</Text>
           </View>
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer} fixed>
-          Regd. office: {settings.regd_office_address}  |  GSTIN: {settings.gstin}
-        </Text>
+        <View style={styles.footerLine} />
+        <View style={styles.footer}>
+          <Text style={styles.footerLineText}>Regd. office:- {settings.regd_office_address}</Text>
+          <Text>GSTIN :- {settings.gstin}</Text>
+        </View>
       </Page>
     </Document>
   )
