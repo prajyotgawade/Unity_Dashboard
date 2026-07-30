@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
-import { Plus, Trash2, Save, ArrowRight, Loader2, ChevronDown, Check } from 'lucide-react'
+import { Plus, Trash2, Save, ArrowRight, Loader2, ChevronDown, Check, Download } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
@@ -274,27 +274,38 @@ export function DocumentEditor({
         <div className="flex gap-2">
           {/* Action to chain document if not new */}
           {!isNew && documentId && (
-            <div className="relative group">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-2.5 text-sm font-semibold text-brand-700 shadow-sm hover:bg-brand-50 transition-colors"
+            <div className="flex gap-2">
+              <a
+                href={`/api/export/pdf?id=${documentId}`}
+                download
+                className="inline-flex items-center justify-center rounded-xl border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-100 transition-colors"
+                title="Download PDF"
               >
-                Convert To <ChevronDown className="ml-2 h-4 w-4" />
-              </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-brand-100 rounded-xl shadow-xl hidden group-hover:block z-50 overflow-hidden py-1">
-                {['quotation', 'invoice', 'dc', 'po', 'wcc'].filter(t => t !== watchType).map(type => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={async () => {
-                      const { convertDocument } = await import('./actions');
-                      await convertDocument(documentId, type);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50 uppercase transition-colors"
-                  >
-                    {type}
-                  </button>
-                ))}
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+              </a>
+              <div className="relative group">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-2.5 text-sm font-semibold text-brand-700 shadow-sm hover:bg-brand-50 transition-colors"
+                >
+                  Convert To <ChevronDown className="ml-2 h-4 w-4" />
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-brand-100 rounded-xl shadow-xl hidden group-hover:block z-50 overflow-hidden py-1">
+                  {['quotation', 'invoice', 'dc', 'po', 'wcc'].filter(t => t !== watchType).map(type => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={async () => {
+                        const { convertDocument } = await import('./actions');
+                        await convertDocument(documentId, type);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50 uppercase transition-colors"
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -372,7 +383,7 @@ export function DocumentEditor({
                 <input {...register('reference_number', { required: true })} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
               </div>
 
-              {(watchType === 'quotation' || watchType === 'dc') && (
+              {(watchType === 'quotation' || watchType === 'dc' || watchType === 'wcc') && (
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-brand-700 mb-1.5">Subject *</label>
                   <input {...register('subject', { required: true })} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
@@ -545,6 +556,14 @@ export function DocumentEditor({
                   <input type="date" {...register('metadata.delivery_date')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
                 </div>
               </>
+            )}
+
+            {watchType === 'wcc' && (
+              <div>
+                <label className="block text-sm font-semibold text-brand-700 mb-1.5">Completion Date</label>
+                <input type="date" {...register('metadata.completion_date')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
+                <p className="text-xs text-brand-400 mt-1">Leave empty to use current date</p>
+              </div>
             )}
           </div>
 

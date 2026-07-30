@@ -171,9 +171,14 @@ export function DocumentsList({ initialDocuments }: { initialDocuments: Document
                                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[childDoc.status] || 'bg-gray-50 text-gray-700'}`}>
                                         {childDoc.status}
                                       </span>
-                                      <Link href={`/dashboard/documents/${childDoc.id}`} className="text-brand-600 hover:text-brand-900 bg-brand-50 hover:bg-brand-100 p-1.5 rounded-md transition-colors">
-                                        <Edit2 className="w-3.5 h-3.5" />
-                                      </Link>
+                                      <div className="flex space-x-1">
+                                        <Link href={`/dashboard/documents/${childDoc.id}`} className="text-brand-600 hover:text-brand-900 bg-brand-50 hover:bg-brand-100 p-1.5 rounded-md transition-colors">
+                                          <Edit2 className="w-3.5 h-3.5" />
+                                        </Link>
+                                        <a href={`/api/export/pdf?id=${childDoc.id}`} download className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-md transition-colors" title="Download PDF">
+                                          <Download className="w-3.5 h-3.5" />
+                                        </a>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
