@@ -61,7 +61,7 @@ CREATE TABLE public.items (
 
 -- 5. Documents Table
 CREATE TYPE document_type AS ENUM ('quotation', 'invoice', 'dc', 'po', 'wcc');
-CREATE TYPE document_status AS ENUM ('Draft', 'Sent', 'Pending', 'Paid', 'Overdue');
+CREATE TYPE document_status AS ENUM ('Draft', 'Sent', 'In Process', 'Paid');
 
 CREATE TABLE public.documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

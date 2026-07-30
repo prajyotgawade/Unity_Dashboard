@@ -24,7 +24,7 @@ type DocumentData = {
   type: 'quotation' | 'invoice' | 'dc' | 'po' | 'wcc'
   document_number: string
   document_date: string
-  status: 'Draft' | 'Sent' | 'Pending' | 'Paid' | 'Overdue'
+  status: 'Draft' | 'Sent' | 'In Process' | 'Paid'
   client_id: string | null
   supplier_id: string | null
   parent_id: string | null
@@ -66,16 +66,7 @@ export function DocumentEditor({
   const [documentId, setDocumentId] = useState<string | null>(initialData?.id || null)
 
   const defaultValues: DocumentData = useMemo(() => {
-    if (!isNew && initialData) {
-      return {
-        ...initialData,
-        document_date: initialData.document_date || format(new Date(), 'yyyy-MM-dd'),
-        metadata: initialData.metadata || {},
-        lines: initialLines.length > 0 ? initialLines.map(l => ({...l, gst_rate: l.gst_rate ?? 18})) : [{ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, gst_rate: 18, amount: 0 }],
-      }
-    }
-    
-    return {
+    const defaults: DocumentData = {
       type: 'quotation',
       document_number: '', // Auto-generate later or user inputs
       document_date: format(new Date(), 'yyyy-MM-dd'),
@@ -92,6 +83,20 @@ export function DocumentEditor({
       total: 0,
       lines: [{ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, gst_rate: 18, amount: 0 }],
     }
+
+    if (initialData) {
+      return {
+        ...defaults,
+        ...initialData,
+        document_date: initialData.document_date || defaults.document_date,
+        metadata: initialData.metadata || { terms: DEFAULT_TERMS[initialData.type as keyof typeof DEFAULT_TERMS] || '' },
+        lines: initialLines && initialLines.length > 0 
+          ? initialLines.map(l => ({...l, gst_rate: l.gst_rate ?? 18})) 
+          : defaults.lines,
+      }
+    }
+    
+    return defaults
   }, [initialData, initialLines, isNew])
 
   const { register, control, handleSubmit, watch, setValue, getValues, reset } = useForm<DocumentData>({
@@ -362,27 +367,27 @@ export function DocumentEditor({
 
               <div>
                 <label className="block text-sm font-semibold text-brand-700 mb-1.5">
-                  {watchType === 'invoice' ? 'Client PO Number' : 'Reference Number'}
+                  {watchType === 'invoice' || watchType === 'dc' ? 'Client PO Number *' : 'Reference Number *'}
                 </label>
-                <input {...register('reference_number')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
+                <input {...register('reference_number', { required: true })} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
               </div>
 
               {(watchType === 'quotation' || watchType === 'dc') && (
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-brand-700 mb-1.5">Subject</label>
-                  <input {...register('subject')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
+                  <label className="block text-sm font-semibold text-brand-700 mb-1.5">Subject *</label>
+                  <input {...register('subject', { required: true })} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
                 </div>
               )}
 
               {watchType === 'wcc' && (
                 <>
                   <div>
-                    <label className="block text-sm font-semibold text-brand-700 mb-1.5">Work Order Value</label>
-                    <input {...register('metadata.work_order_value')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
+                    <label className="block text-sm font-semibold text-brand-700 mb-1.5">Work Order Value *</label>
+                    <input {...register('metadata.work_order_value', { required: true })} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-brand-700 mb-1.5">Work Period (e.g. Jan - Mar)</label>
-                    <input {...register('metadata.work_period')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
+                    <label className="block text-sm font-semibold text-brand-700 mb-1.5">Work Period (e.g. Jan - Mar) *</label>
+                    <input {...register('metadata.work_period', { required: true })} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
                   </div>
                 </>
               )}
@@ -498,12 +503,11 @@ export function DocumentEditor({
             
             <div>
               <label className="block text-sm font-semibold text-brand-700 mb-1.5">Status</label>
-              <select {...register('status')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm">
+              <select {...register('status')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 shadow-sm transition-all font-semibold">
                 <option value="Draft">Draft</option>
                 <option value="Sent">Sent</option>
-                <option value="Pending">Pending</option>
+                <option value="In Process">In Process</option>
                 <option value="Paid">Paid</option>
-                <option value="Overdue">Overdue</option>
               </select>
             </div>
 

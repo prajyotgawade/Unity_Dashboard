@@ -22,7 +22,8 @@ export default async function DashboardPage() {
   let totalInvoiced = 0
   let totalGST = 0
   let totalPaid = 0
-  let totalPending = 0
+  let totalSent = 0
+  let totalInProcess = 0
 
   invoices?.forEach(inv => {
     totalInvoiced += inv.total || 0
@@ -30,8 +31,10 @@ export default async function DashboardPage() {
     
     if (inv.status === 'Paid') {
       totalPaid += inv.total || 0
-    } else if (inv.status === 'Pending' || inv.status === 'Sent' || inv.status === 'Overdue') {
-      totalPending += inv.total || 0
+    } else if (inv.status === 'In Process') {
+      totalInProcess += inv.total || 0
+    } else if (inv.status === 'Sent' || inv.status === 'Draft') {
+      totalSent += inv.total || 0
     }
   })
 
@@ -71,22 +74,32 @@ export default async function DashboardPage() {
               <span className="text-green-800 font-medium">Paid</span>
               <span className="text-2xl font-bold text-green-700">₹ {totalPaid.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
             </div>
+            <div className="w-full flex justify-between items-center bg-purple-50/50 p-5 rounded-xl border border-purple-100/50 hover:bg-purple-50 transition-colors duration-200">
+              <span className="text-purple-800 font-medium">In Process</span>
+              <span className="text-2xl font-bold text-purple-700">₹ {totalInProcess.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+            </div>
             <div className="w-full flex justify-between items-center bg-amber-50/50 p-5 rounded-xl border border-amber-100/50 hover:bg-amber-50 transition-colors duration-200">
-              <span className="text-amber-800 font-medium">Pending</span>
-              <span className="text-2xl font-bold text-amber-700">₹ {totalPending.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+              <span className="text-amber-800 font-medium">Sent</span>
+              <span className="text-2xl font-bold text-amber-700">₹ {totalSent.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
             </div>
             
             {/* Animated Progress Bar Chart */}
             <div className="w-full pt-4">
               <div className="flex justify-between text-sm font-medium text-brand-600 mb-2">
                 <span>Paid ({((totalPaid / (totalInvoiced || 1)) * 100).toFixed(0)}%)</span>
-                <span>Pending ({((totalPending / (totalInvoiced || 1)) * 100).toFixed(0)}%)</span>
+                <span>In Process ({((totalInProcess / (totalInvoiced || 1)) * 100).toFixed(0)}%)</span>
+                <span>Sent ({((totalSent / (totalInvoiced || 1)) * 100).toFixed(0)}%)</span>
               </div>
               <div className="w-full bg-brand-100 rounded-full h-3 overflow-hidden flex shadow-inner">
                 <div 
-                  className="bg-green-500 h-3 rounded-full transition-all duration-1000 ease-out" 
+                  className="bg-green-500 h-3 transition-all duration-1000 ease-out" 
                   style={{ width: `${(totalPaid / (totalInvoiced || 1)) * 100}%` }}
                 ></div>
+                <div 
+                  className="bg-purple-400 h-3 transition-all duration-1000 ease-out border-l border-white/20" 
+                  style={{ width: `${(totalInProcess / (totalInvoiced || 1)) * 100}%` }}
+                ></div>
+                {/* Remaining is implied by the background or can be filled with amber if needed */}
               </div>
             </div>
           </div>
