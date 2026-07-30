@@ -1,5 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import { FileText, Plus, FilePlus } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
 
+const statusColors: Record<string, string> = {
+  Draft: 'bg-gray-100 text-gray-800 border-gray-200',
+  Sent: 'bg-blue-100 text-blue-800 border-blue-200',
+  'In Process': 'bg-purple-100 text-purple-800 border-purple-200',
+  Paid: 'bg-green-100 text-green-800 border-green-200',
+}
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
@@ -18,6 +27,20 @@ export default async function DashboardPage() {
     .from('documents')
     .select('id')
     .eq('type', 'quotation')
+
+  const { data: recentDocs } = await supabase
+    .from('documents')
+    .select(`
+      id,
+      type,
+      document_number,
+      created_at,
+      status,
+      client:clients(name),
+      supplier:suppliers(name)
+    `)
+    .order('created_at', { ascending: false })
+    .limit(5)
 
   const numQuotations = quotations?.length || 0
   const numInvoices = invoices?.length || 0
@@ -107,6 +130,61 @@ export default async function DashboardPage() {
                   ></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Quick Access / Recent Documents */}
+        <div className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-brand-100 h-full">
+          <div className="px-5 py-4 border-b border-brand-100 bg-brand-50/30 flex justify-between items-center flex-none">
+            <h3 className="text-base font-semibold text-brand-900">Recent Documents</h3>
+            <div className="flex items-center gap-3">
+              <Link href="/dashboard/documents/new" className="text-brand-600 hover:text-brand-800 p-1 bg-brand-50 hover:bg-brand-100 rounded-md transition-colors" title="New Document">
+                <Plus className="w-4 h-4" />
+              </Link>
+              <Link href="/dashboard/documents" className="text-sm text-brand-600 hover:text-brand-900 font-medium">View All</Link>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3">
+            <div className="flex flex-col gap-2">
+              {recentDocs?.map((doc: any) => (
+                <Link
+                  key={doc.id}
+                  href={`/dashboard/documents/${doc.id}`}
+                  className="flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-brand-100 hover:bg-brand-50/50 transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center group-hover:bg-brand-100 group-hover:scale-105 transition-all">
+                      <FileText className="w-5 h-5 text-brand-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-brand-900 mb-0.5">{doc.document_number}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-brand-500 uppercase tracking-wider">{doc.type}</span>
+                        <span className="text-brand-300">•</span>
+                        <span className="text-[10px] text-brand-400 font-medium">
+                          {formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right flex flex-col items-end">
+                    <p className="text-xs font-semibold text-brand-700 max-w-[120px] sm:max-w-[150px] truncate mb-1">
+                      {doc.client?.name || doc.supplier?.name || 'No Contact'}
+                    </p>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border ${statusColors[doc.status] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
+                      {doc.status}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+              {!recentDocs?.length && (
+                <div className="p-8 text-center flex flex-col items-center justify-center h-full">
+                  <FilePlus className="w-10 h-10 text-brand-200 mb-3" />
+                  <p className="text-sm font-medium text-brand-500">No documents yet.</p>
+                  <Link href="/dashboard/documents/new" className="mt-2 text-sm text-brand-600 font-semibold hover:underline">Create your first one</Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
