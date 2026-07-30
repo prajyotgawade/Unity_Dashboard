@@ -428,23 +428,23 @@ export function DocumentEditor({
               </button>
             </div>
             
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-brand-100">
+            <div className="overflow-hidden">
+              <table className="w-full table-fixed divide-y divide-brand-100">
                 <thead className="bg-brand-50/80">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-brand-500 w-10 uppercase tracking-wider">Sr</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-brand-500 uppercase tracking-wider">Description</th>
-                    {watchType === 'wcc' && <th className="px-4 py-3 text-left text-xs font-bold text-brand-500 w-32 uppercase tracking-wider">Make</th>}
-                    <th className="px-4 py-3 text-left text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">Qty</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">Unit</th>
+                    <th className="px-2 py-3 text-left text-xs font-bold text-brand-500 w-10 uppercase tracking-wider">Sr</th>
+                    <th className="px-2 py-3 text-left text-xs font-bold text-brand-500 uppercase tracking-wider">Description</th>
+                    {watchType === 'wcc' && <th className="px-2 py-3 text-left text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">Make</th>}
+                    <th className="px-2 py-3 text-left text-xs font-bold text-brand-500 w-20 uppercase tracking-wider">Qty</th>
+                    <th className="px-2 py-3 text-left text-xs font-bold text-brand-500 w-20 uppercase tracking-wider">Unit</th>
                     {watchType !== 'dc' && watchType !== 'wcc' && (
-                      <th className="px-4 py-3 text-right text-xs font-bold text-brand-500 w-32 uppercase tracking-wider">Rate</th>
+                      <th className="px-2 py-3 text-right text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">Rate</th>
                     )}
                     {watchType !== 'dc' && watchType !== 'wcc' && (
-                      <th className="px-4 py-3 text-center text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">GST %</th>
+                      <th className="px-2 py-3 text-center text-xs font-bold text-brand-500 w-20 uppercase tracking-wider">GST%</th>
                     )}
                     {watchType !== 'dc' && watchType !== 'wcc' && (
-                      <th className="px-4 py-3 text-right text-xs font-bold text-brand-500 w-32 uppercase tracking-wider">Amount</th>
+                      <th className="px-2 py-3 text-right text-xs font-bold text-brand-500 w-28 uppercase tracking-wider">Amount</th>
                     )}
                     <th className="px-4 py-3 w-10"></th>
                   </tr>
@@ -452,8 +452,8 @@ export function DocumentEditor({
                 <tbody className="divide-y divide-brand-100 bg-white">
                   {fields.map((field, index) => (
                     <tr key={field.id} className="align-top group hover:bg-brand-50/30 transition-colors">
-                      <td className="px-4 py-3 text-sm text-brand-500 pt-5">{index + 1}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 py-3 text-sm text-brand-500 pt-5">{index + 1}</td>
+                      <td className="px-2 py-3">
                         <div className="flex flex-col gap-2">
                           <Controller
                             control={control}
@@ -470,50 +470,50 @@ export function DocumentEditor({
                                   field.onChange(val)
                                   handleItemSelect(index, val)
                                 }}
-                                placeholder="-- Custom Item --"
+                                placeholder="-- Item --"
                                 className="bg-brand-50/50"
                               />
                             )}
                           />
                           <textarea
                             {...register(`lines.${index}.description`)}
-                            rows={2}
+                            rows={3}
                             required
-                            placeholder="Description details..."
-                            className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 resize-y shadow-sm transition-all"
+                            placeholder="Details..."
+                            className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 resize-y shadow-sm transition-all min-h-[80px]"
                           />
                         </div>
                       </td>
                       {watchType === 'wcc' && (
-                        <td className="px-4 py-3">
-                          <input {...register(`lines.${index}.make`)} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 mt-11 shadow-sm transition-all" placeholder="Make" />
+                        <td className="px-2 py-3">
+                          <input {...register(`lines.${index}.make`)} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-2 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 mt-[42px] shadow-sm transition-all" placeholder="Make" />
                         </td>
                       )}
-                      <td className="px-4 py-3">
-                        <input type="number" step="0.01" {...register(`lines.${index}.quantity`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-right mt-11 shadow-sm transition-all" />
+                      <td className="px-2 py-3">
+                        <input type="number" step="0.01" {...register(`lines.${index}.quantity`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-2 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-center mt-[42px] shadow-sm transition-all" />
                       </td>
-                      <td className="px-4 py-3">
-                        <input type="text" {...register(`lines.${index}.unit`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 mt-11 shadow-sm transition-all" />
+                      <td className="px-2 py-3">
+                        <input type="text" {...register(`lines.${index}.unit`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-2 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-center mt-[42px] shadow-sm transition-all" />
                       </td>
                       {watchType !== 'dc' && watchType !== 'wcc' && (
-                        <td className="px-4 py-3">
-                          <input type="number" step="0.01" {...register(`lines.${index}.rate`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-right mt-11 shadow-sm transition-all" />
+                        <td className="px-2 py-3">
+                          <input type="number" step="0.01" {...register(`lines.${index}.rate`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-2 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-right mt-[42px] shadow-sm transition-all" />
                         </td>
                       )}
                       {watchType !== 'dc' && watchType !== 'wcc' && (
-                        <td className="px-4 py-3">
-                          <select {...register(`lines.${index}.gst_rate`)} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-2 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 mt-11 shadow-sm transition-all text-center">
+                        <td className="px-2 py-3">
+                          <select {...register(`lines.${index}.gst_rate`)} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-1 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 mt-[42px] shadow-sm transition-all text-center">
                             <option value={18}>18%</option>
                             <option value={9}>9%</option>
                           </select>
                         </td>
                       )}
                       {watchType !== 'dc' && watchType !== 'wcc' && (
-                        <td className="px-4 py-3 text-right text-sm font-bold text-brand-900 pt-14">
-                          ₹ {watchLines[index]?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                        <td className="px-2 py-3 text-right text-sm font-bold text-brand-900 pt-[52px]">
+                          ₹{watchLines[index]?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
                         </td>
                       )}
-                      <td className="px-4 py-3 pt-12 text-right">
+                      <td className="px-2 py-3 pt-[50px] text-right">
                         <button type="button" onClick={() => remove(index)} className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors opacity-0 group-hover:opacity-100">
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -570,28 +570,28 @@ export function DocumentEditor({
 
           {/* Totals Box (Receipt Style) */}
           {watchType !== 'dc' && watchType !== 'wcc' && (
-            <div className="bg-gradient-to-b from-brand-900 to-brand-950 text-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 text-white rounded-2xl shadow-xl overflow-hidden">
               <div className="p-6 space-y-4">
                 <h2 className="text-lg font-bold border-b border-white/20 pb-3 flex items-center justify-between">
                   <span>Summary</span>
                   <span className="text-white/60 text-sm font-normal">INR</span>
                 </h2>
                 
-                <div className="space-y-3 text-sm font-medium text-brand-100">
+                <div className="space-y-3 text-sm font-medium text-slate-300">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>₹ {formValues.subtotal?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
+                    <span className="text-white">₹ {formValues.subtotal?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
                   </div>
                   
                   {(watchType === 'invoice' || watchType === 'po') && (
                     <>
-                      <div className="flex justify-between text-white/70">
+                      <div className="flex justify-between">
                         <span>Total CGST</span>
-                        <span>₹ {formValues.cgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
+                        <span className="text-white">₹ {formValues.cgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
                       </div>
-                      <div className="flex justify-between text-white/70">
+                      <div className="flex justify-between">
                         <span>Total SGST</span>
-                        <span>₹ {formValues.sgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
+                        <span className="text-white">₹ {formValues.sgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
                       </div>
                     </>
                   )}
@@ -603,9 +603,9 @@ export function DocumentEditor({
                 <div className="absolute inset-0 border-t-2 border-dashed border-white/20"></div>
               </div>
 
-              <div className="p-6 bg-brand-950">
+              <div className="p-6 bg-slate-950">
                 <div className="flex justify-between items-end">
-                  <span className="font-semibold text-brand-200">Grand Total</span>
+                  <span className="font-semibold text-slate-300">Grand Total</span>
                   <span className="text-3xl font-black tracking-tight text-white">
                     ₹ {formValues.total?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
                   </span>

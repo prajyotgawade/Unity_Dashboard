@@ -3,6 +3,9 @@ import { DocumentsList } from './documents-list'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function DocumentsPage() {
   const supabase = await createClient()
 

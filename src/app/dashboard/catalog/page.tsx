@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { CatalogClient } from './catalog-client'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function CatalogPage() {
   const supabase = await createClient()
 
