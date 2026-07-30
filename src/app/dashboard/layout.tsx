@@ -35,7 +35,7 @@ export default function DashboardLayout({
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Documents', href: '/dashboard/documents', icon: FileText },
     { name: 'Contacts', href: '/dashboard/contacts', icon: Users },
-    { name: 'Catalog', href: '/dashboard/catalog', icon: Package },
+    { name: 'Master Sheet', href: '/dashboard/catalog', icon: Package },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 

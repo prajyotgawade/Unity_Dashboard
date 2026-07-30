@@ -53,6 +53,10 @@ CREATE TABLE public.suppliers (
 CREATE TABLE public.items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     description TEXT NOT NULL,
+    supplier_id UUID REFERENCES public.suppliers(id) ON DELETE SET NULL,
+    ue_cost NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    profit_percentage NUMERIC(5, 2) NOT NULL DEFAULT 0,
+    quantity NUMERIC(10, 2) NOT NULL DEFAULT 1,
     unit TEXT NOT NULL,
     rate NUMERIC(10, 2) NOT NULL DEFAULT 0,
     gst_rate NUMERIC(5, 2) NOT NULL DEFAULT 18,
