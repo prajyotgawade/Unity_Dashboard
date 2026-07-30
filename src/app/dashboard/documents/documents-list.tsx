@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { Search, FileText, Download, Edit2, ChevronDown, ChevronUp, PlusCircle } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 type DocumentItem = {
   id: string
@@ -30,6 +32,8 @@ export function DocumentsList({ initialDocuments }: { initialDocuments: Document
   const [searchQuery, setSearchQuery] = useState('')
   const [activeType, setActiveType] = useState<string>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const supabase = createClient()
+  const router = useRouter()
 
   const topLevelDocs = initialDocuments.filter((doc) => {
     const matchesSearch = 
