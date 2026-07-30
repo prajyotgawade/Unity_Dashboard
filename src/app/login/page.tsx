@@ -1,12 +1,13 @@
 import { login } from './actions'
+import { Logo } from '@/components/ui/Logo'
 
 export default async function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
   const { error } = await searchParams;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-brand-50">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border border-brand-100">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-brand-900 tracking-tight">Unity Enterprises</h1>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Logo className="w-20 h-20 text-brand-900 mb-4" />
           <p className="text-brand-500 mt-2">Sign in to your account</p>
         </div>
 

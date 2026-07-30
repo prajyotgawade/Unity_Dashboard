@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-
+import { Logo } from '@/components/ui/Logo';
 export const dynamic = 'force-dynamic';
 
 export default function DashboardLayout({
@@ -45,8 +45,8 @@ export default function DashboardLayout({
       <aside className="hidden w-64 overflow-y-auto border-r border-brand-800 bg-brand-900 md:block shadow-xl z-20 flex-shrink-0">
         <div className="flex h-16 items-center justify-center border-b border-brand-800 px-4 py-6 sticky top-0 bg-brand-900 z-10">
           <h1 className="text-xl font-bold tracking-tight text-white flex items-center">
-            <span className="text-accent-500 mr-2 text-2xl">⚡</span>
-            Unity
+            <Logo className="w-10 h-10 text-white mr-3" />
+            <span className="hidden md:block">Unity Enterprises</span>
           </h1>
         </div>
         
@@ -93,7 +93,7 @@ export default function DashboardLayout({
         {/* Mobile Header (Sticky Glassmorphism) */}
         <header className="flex h-16 items-center justify-between border-b border-brand-200 bg-white/80 backdrop-blur-md px-4 md:hidden z-30 sticky top-0 shadow-sm">
           <h1 className="text-lg font-bold text-brand-900 flex items-center">
-             <span className="text-accent-500 mr-2">⚡</span> Unity
+             <Logo className="w-8 h-8 text-brand-900 mr-2" /> Unity Enterprises
           </h1>
           <button className="text-brand-600 hover:bg-brand-100 p-2 rounded-md">
             <Menu className="w-6 h-6" />
