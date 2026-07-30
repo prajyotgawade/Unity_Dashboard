@@ -17,6 +17,7 @@ interface SearchableSelectProps {
   placeholder?: string
   required?: boolean
   className?: string
+  direction?: 'up' | 'down'
 }
 
 export function SearchableSelect({
@@ -26,6 +27,7 @@ export function SearchableSelect({
   placeholder = 'Select...',
   required = false,
   className = '',
+  direction = 'down',
 }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -79,7 +81,7 @@ export function SearchableSelect({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-brand-200 rounded-xl shadow-lg overflow-hidden flex flex-col max-h-[300px]">
+        <div className={`absolute z-50 w-full bg-white border border-brand-200 rounded-xl shadow-lg overflow-hidden flex flex-col max-h-[300px] ${direction === 'up' ? 'bottom-full mb-1' : 'mt-1'}`}>
           <div className="p-2 border-b border-brand-100 flex items-center gap-2 sticky top-0 bg-white">
             <Search className="h-4 w-4 text-brand-400 shrink-0" />
             <input

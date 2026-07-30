@@ -91,12 +91,12 @@ export function DocumentEditor({
         ...initialData,
         document_date: initialData.document_date || defaults.document_date,
         metadata: initialData.metadata || { terms: DEFAULT_TERMS[initialData.type as keyof typeof DEFAULT_TERMS] || '' },
-        lines: initialLines && initialLines.length > 0 
-          ? initialLines.map(l => ({...l, gst_rate: l.gst_rate ?? 18})) 
+        lines: initialLines && initialLines.length > 0
+          ? initialLines.map(l => ({ ...l, gst_rate: l.gst_rate ?? 18 }))
           : defaults.lines,
       }
     }
-    
+
     return defaults
   }, [initialData, initialLines, isNew])
 
@@ -104,71 +104,46 @@ export function DocumentEditor({
     defaultValues,
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'lines',
   })
 
   const formValues = watch()
   const watchType = watch('type')
-  const watchLines = watch('lines')
+  const watchLines = watch('lines') || []
 
-  // Live Calculations
-  useEffect(() => {
-    let newSubtotal = 0
-    let cgst = 0
-    let sgst = 0
+  // --- Computed Derived State ---
+  const computedLines = watchLines.map(line => {
+    const amount = (Number(line.quantity) || 0) * (Number(line.rate) || 0)
+    return { ...line, amount }
+  })
 
-    const updatedLines = getValues('lines').map(line => {
-      // WCC and DC don't use rates usually, but we keep the math generic. 
-      // If rate is 0, amount is 0.
-      const amount = (line.quantity || 0) * (line.rate || 0)
-      newSubtotal += amount
-      
-      if (watchType === 'invoice' || watchType === 'po') {
-        const rate = Number(line.gst_rate) || 18
-        cgst += (amount * (rate / 100)) / 2
-        sgst += (amount * (rate / 100)) / 2
-      }
-      
-      return { ...line, amount }
+  const computedSubtotal = computedLines.reduce((sum, line) => sum + line.amount, 0)
+  
+  let computedCgst = 0
+  let computedSgst = 0
+  if (watchType === 'invoice' || watchType === 'po') {
+    computedLines.forEach(line => {
+      const rate = Number(line.gst_rate) || 18
+      computedCgst += (line.amount * (rate / 100)) / 2
+      computedSgst += (line.amount * (rate / 100)) / 2
     })
+  }
 
-    // Avoid infinite loop by only updating if amounts changed
-    const currentLines = getValues('lines')
-    const needsUpdate = currentLines.some((l, i) => l.amount !== updatedLines[i].amount)
-    
-    if (needsUpdate) {
-      setValue('lines', updatedLines, { shouldDirty: true })
-    }
-
-    // Taxes only apply to Invoice and PO in the layout requirements
-    let total = newSubtotal
-    if (watchType === 'invoice' || watchType === 'po') {
-      total = newSubtotal + cgst + sgst
-    }
-
-    if (
-      getValues('subtotal') !== newSubtotal ||
-      getValues('cgst') !== cgst ||
-      getValues('sgst') !== sgst ||
-      getValues('total') !== total
-    ) {
-      setValue('subtotal', newSubtotal, { shouldDirty: true })
-      setValue('cgst', cgst, { shouldDirty: true })
-      setValue('sgst', sgst, { shouldDirty: true })
-      setValue('total', total, { shouldDirty: true })
-    }
-  }, [watchLines, watchType, setValue, getValues])
+  const computedTotal = (watchType === 'invoice' || watchType === 'po') 
+    ? computedSubtotal + computedCgst + computedSgst 
+    : computedSubtotal
+  // ------------------------------
 
   // Handle Type Change (Reset specific fields)
   useEffect(() => {
     if (isNew) {
-       // set default terms when type changes
-       const currentTerms = getValues('metadata.terms')
-       if (!currentTerms || Object.values(DEFAULT_TERMS).includes(currentTerms)) {
-          setValue('metadata.terms', DEFAULT_TERMS[watchType as keyof typeof DEFAULT_TERMS] || '')
-       }
+      // set default terms when type changes
+      const currentTerms = getValues('metadata.terms')
+      if (!currentTerms || Object.values(DEFAULT_TERMS).includes(currentTerms)) {
+        setValue('metadata.terms', DEFAULT_TERMS[watchType as keyof typeof DEFAULT_TERMS] || '')
+      }
     }
   }, [watchType, isNew, setValue, getValues])
 
@@ -176,10 +151,14 @@ export function DocumentEditor({
     if (!itemId) return
     const item = items.find(i => i.id === itemId)
     if (item) {
-      setValue(`lines.${index}.description`, item.description, { shouldDirty: true })
-      setValue(`lines.${index}.unit`, item.unit, { shouldDirty: true })
-      setValue(`lines.${index}.rate`, item.rate, { shouldDirty: true })
-      setValue(`lines.${index}.gst_rate`, item.gst_rate !== undefined ? item.gst_rate : 18, { shouldDirty: true })
+      const currentLine = getValues(`lines.${index}`)
+      update(index, {
+        ...currentLine,
+        description: item.description,
+        unit: item.unit,
+        rate: item.rate,
+        gst_rate: item.gst_rate !== undefined ? item.gst_rate : 18,
+      })
     }
   }
 
@@ -214,10 +193,10 @@ export function DocumentEditor({
         reference_number: data.reference_number,
         subject: data.subject,
         metadata: data.metadata,
-        subtotal: data.subtotal,
-        cgst: data.cgst,
-        sgst: data.sgst,
-        total: data.total,
+        subtotal: computedSubtotal,
+        cgst: computedCgst,
+        sgst: computedSgst,
+        total: computedTotal,
         parent_id: data.parent_id,
       }
 
@@ -229,7 +208,7 @@ export function DocumentEditor({
         savedDocId = newDoc.id
         setDocumentId(newDoc.id)
         if (isNew) {
-           window.history.replaceState(null, '', `/dashboard/documents/${newDoc.id}`)
+          window.history.replaceState(null, '', `/dashboard/documents/${newDoc.id}`)
         }
       } else {
         const { error } = await supabase.from('documents').update(docPayload).eq('id', savedDocId)
@@ -249,7 +228,7 @@ export function DocumentEditor({
         unit: line.unit,
         rate: line.rate,
         gst_rate: line.gst_rate,
-        amount: line.amount,
+        amount: computedLines[index].amount,
         make: line.make,
         sort_order: index,
       }))
@@ -319,7 +298,7 @@ export function DocumentEditor({
               </div>
             </div>
           )}
-          
+
           <button
             type="submit"
             disabled={isSaving}
@@ -336,13 +315,13 @@ export function DocumentEditor({
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-brand-100 space-y-6">
             <h2 className="text-lg font-semibold text-brand-900 border-b border-brand-100 pb-3">Document Details</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-brand-700 mb-1.5">Document No. *</label>
                 <input {...register('document_number')} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" placeholder="e.g. Q108_26_27" />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-semibold text-brand-700 mb-1.5">Date</label>
                 <input type="date" {...register('document_date')} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm" />
@@ -416,8 +395,8 @@ export function DocumentEditor({
           </div>
 
           {/* Line Items */}
-          <div className="bg-white rounded-2xl shadow-sm border border-brand-100 overflow-hidden">
-            <div className="p-5 border-b border-brand-100 flex justify-between items-center bg-brand-50/50">
+          <div className="bg-white rounded-2xl shadow-sm border border-brand-100">
+            <div className="p-5 border-b border-brand-100 flex justify-between items-center bg-brand-50/50 rounded-t-2xl">
               <h2 className="text-lg font-semibold text-brand-900">Items</h2>
               <button
                 type="button"
@@ -427,8 +406,8 @@ export function DocumentEditor({
                 <Plus className="h-4 w-4 mr-1" /> Add Row
               </button>
             </div>
-            
-            <div className="overflow-hidden">
+
+            <div className="overflow-visible">
               <table className="w-full table-fixed divide-y divide-brand-100">
                 <thead className="bg-brand-50/80">
                   <tr>
@@ -460,10 +439,10 @@ export function DocumentEditor({
                             name={`lines.${index}.item_id`}
                             render={({ field }) => (
                               <SearchableSelect
-                                options={items.map(i => ({ 
-                                  value: i.id, 
+                                options={items.map(i => ({
+                                  value: i.id,
                                   label: i.description.length > 50 ? i.description.substring(0, 50) + '...' : i.description,
-                                  description: `Rate: ₹${i.rate} | Unit: ${i.unit}` 
+                                  description: `Rate: ₹${i.rate} | Unit: ${i.unit}`
                                 }))}
                                 value={field.value}
                                 onChange={(val) => {
@@ -472,6 +451,7 @@ export function DocumentEditor({
                                 }}
                                 placeholder="-- Item --"
                                 className="bg-brand-50/50"
+                                direction="up"
                               />
                             )}
                           />
@@ -510,7 +490,7 @@ export function DocumentEditor({
                       )}
                       {watchType !== 'dc' && watchType !== 'wcc' && (
                         <td className="px-2 py-3 text-right text-sm font-bold text-brand-900 pt-[52px]">
-                          ₹{watchLines[index]?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                          ₹{computedLines[index]?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
                         </td>
                       )}
                       <td className="px-2 py-3 pt-[50px] text-right">
@@ -530,7 +510,7 @@ export function DocumentEditor({
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-brand-100 space-y-4">
             <h2 className="text-lg font-semibold text-brand-900 border-b border-brand-100 pb-3">Status & Extras</h2>
-            
+
             <div>
               <label className="block text-sm font-semibold text-brand-700 mb-1.5">Status</label>
               <select {...register('status')} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 shadow-sm transition-all font-semibold">
@@ -553,7 +533,7 @@ export function DocumentEditor({
                 />
               </div>
             )}
-            
+
             {watchType === 'po' && (
               <>
                 <div>
@@ -576,28 +556,28 @@ export function DocumentEditor({
                   <span>Summary</span>
                   <span className="text-white/60 text-sm font-normal">INR</span>
                 </h2>
-                
+
                 <div className="space-y-3 text-sm font-medium text-slate-300">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span className="text-white">₹ {formValues.subtotal?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
+                    <span className="text-white">₹ {computedSubtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                   </div>
-                  
+
                   {(watchType === 'invoice' || watchType === 'po') && (
                     <>
                       <div className="flex justify-between">
                         <span>Total CGST</span>
-                        <span className="text-white">₹ {formValues.cgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
+                        <span className="text-white">₹ {computedCgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Total SGST</span>
-                        <span className="text-white">₹ {formValues.sgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
+                        <span className="text-white">₹ {computedSgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                       </div>
                     </>
                   )}
                 </div>
               </div>
-              
+
               {/* Receipt cutoff styling */}
               <div className="relative h-2 w-full">
                 <div className="absolute inset-0 border-t-2 border-dashed border-white/20"></div>
@@ -607,7 +587,7 @@ export function DocumentEditor({
                 <div className="flex justify-between items-end">
                   <span className="font-semibold text-slate-300">Grand Total</span>
                   <span className="text-3xl font-black tracking-tight text-white">
-                    ₹ {formValues.total?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                    ₹ {computedTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>
