@@ -196,7 +196,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
     switch (document.type) {
       case 'quotation': return 'Quotation'
       case 'invoice': return 'TAX INVOICE'
-      case 'dc': return 'Delivery Challan'
+      case 'dc': return 'Delivery challan'
       case 'po': return 'PURCHASE ORDER'
       case 'wcc': return 'WORK COMPLETION CERTIFICATE'
       default: return 'Document'
@@ -236,7 +236,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
           <View style={styles.topLeft}>
             {!isPO && !isWCC && (
               <>
-                <Text style={{ marginBottom: 3 }}>{isInvoice ? 'Bill to,' : 'To,'}</Text>
+                <Text style={{ marginBottom: 3 }}>{isInvoice ? 'Bill to,' : isDC ? 'Ship To,' : 'To,'}</Text>
                 {client?.name && <Text style={{ marginBottom: 2 }}>{client.name}</Text>}
                 {client?.address && <Text style={{ marginBottom: 2 }}>{client.address}</Text>}
                 {client?.gstin && <Text style={{ marginTop: 2 }}>{isInvoice ? 'GSTIN- ' : 'GSTIN: '}{client.gstin}</Text>}
@@ -247,10 +247,10 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             
             {isPO && (
               <>
-                <Text style={{ marginBottom: 3 }}>To,</Text>
+                <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 3 }}>Supplier Name & Address: -</Text>
                 {supplier?.name && <Text style={{ marginBottom: 2 }}>{supplier.name}</Text>}
                 {supplier?.address && <Text style={{ marginBottom: 2 }}>{supplier.address}</Text>}
-                {supplier?.gstin && <Text style={{ marginTop: 2 }}>GST No: {supplier.gstin}</Text>}
+                {supplier?.gstin && <Text style={{ marginTop: 2 }}>GST No.: {supplier.gstin}</Text>}
               </>
             )}
 
@@ -277,17 +277,26 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             {!isWCC && (
               <>
                 <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>{isInvoice ? 'Date-' : 'Date:'}</Text>
-                  <Text style={styles.metaValue}>{isInvoice ? ' ' : '- '}{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
+                  <Text style={[styles.metaLabel, (isInvoice || isPO) ? { width: 85 } : isDC ? { width: 90 } : {}]}>{isPO ? 'Date-' : isInvoice ? 'Date-' : 'Date:'}</Text>
+                  <Text style={styles.metaValue}>{(isInvoice || isPO) ? ' ' : '- '}{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
                 </View>
                 <View style={styles.metaRow}>
-                  <Text style={[styles.metaLabel, isInvoice ? { width: 85 } : {}]}>{isPO ? 'PO No:' : isInvoice ? 'Invoice number:' : isDC ? 'Challan No:' : 'Quotation:'}</Text>
-                  <Text style={styles.metaValue}>- {document.document_number}</Text>
+                  <Text style={[styles.metaLabel, (isInvoice || isPO) ? { width: 85 } : isDC ? { width: 90 } : {}]}>{isPO ? 'PO number-' : isInvoice ? 'Invoice number:' : isDC ? 'DC challan no.:' : 'Quotation:'}</Text>
+                  <Text style={styles.metaValue}>{(isInvoice || isPO) ? ' ' : '- '}{document.document_number}</Text>
                 </View>
-                {document.reference_number && (
+                {!isPO && document.reference_number && (
                   <View style={styles.metaRow}>
-                    <Text style={[styles.metaLabel, isInvoice ? { width: 105 } : {}]}>{isInvoice ? `${client?.name?.split(' ')[0] || ''} PO number:` : 'Ref:'}</Text>
+                    <Text style={[styles.metaLabel, isInvoice ? { width: 105 } : isDC ? { width: 80 } : {}]}>{isInvoice ? `${client?.name?.split(' ')[0] || ''} PO number:` : isDC ? 'PO Number:' : 'Ref:'}</Text>
                     <Text style={styles.metaValue}>- {document.reference_number}</Text>
+                  </View>
+                )}
+                
+                {isPO && (
+                  <View style={{ marginTop: 15 }}>
+                    <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 3 }}>Buyer Name & Address: -</Text>
+                    <Text style={{ marginBottom: 2 }}>{settings.business_name},</Text>
+                    <Text style={{ marginBottom: 2 }}>{settings.regd_office_address}</Text>
+                    {settings.gstin && <Text style={{ marginTop: 2 }}>GSTIN: - {settings.gstin}</Text>}
                   </View>
                 )}
               </>
@@ -311,7 +320,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
         {/* Subject */}
         {document.subject && (
           <View style={styles.subjectLine}>
-            <Text style={styles.subjectLabel}>{isInvoice ? '' : 'Sub: '}</Text>
+            <Text style={styles.subjectLabel}>{isInvoice ? '' : isDC ? 'Sub: - ' : 'Sub: '}</Text>
             <Text style={styles.subjectValue}>{document.subject}</Text>
           </View>
         )}
@@ -323,7 +332,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
           {/* Table Header */}
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableCell, styles.colSr]}>Sr.{"\n"}No</Text>
-            <Text style={[styles.tableCell, styles.colDesc, { textAlign: 'center' }]}>Description</Text>
+            <Text style={[styles.tableCell, styles.colDesc, { textAlign: 'center' }]}>{isPO ? 'Material / services Description' : 'Description'}</Text>
             {isWCC && <Text style={[styles.tableCell, styles.colMake]}>Make</Text>}
             <Text style={[styles.tableCell, styles.colQty]}>Quantity</Text>
             <Text style={[styles.tableCell, styles.colUnit]}>Unit</Text>
@@ -331,8 +340,8 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             {/* Conditional Columns */}
             {!isDC && !isWCC && (
               <>
-                <Text style={[styles.tableCell, styles.colRate]}>{isInvoice ? 'Rate (Rs. Per unit)' : 'Rate per\nunit (Rs.)'}</Text>
-                <Text style={[styles.tableCell, styles.colAmt]}>{isInvoice ? 'Amount (Rs.)' : 'Total\nAmount\n(Rs.)'}</Text>
+                <Text style={[styles.tableCell, styles.colRate]}>{(isInvoice || isPO) ? 'Rate (Rs. Per unit)' : 'Rate per\nunit (Rs.)'}</Text>
+                <Text style={[styles.tableCell, styles.colAmt]}>{(isInvoice || isPO) ? 'Amount (Rs.)' : 'Total\nAmount\n(Rs.)'}</Text>
               </>
             )}
           </View>
@@ -362,7 +371,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
               <View style={[styles.totalRow, (isInvoice || isPO) ? { borderBottomWidth: 1, borderBottomColor: '#000000' } : {}]}>
                 <View style={styles.totalLabelBox}>
                   <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
-                    {isInvoice ? 'Total Amount' : (isInvoice || isPO) ? 'Sub Total Amount (Rs.)' : 'Total Amount (Rs.)'}
+                    {(isInvoice || isPO) ? 'Total Amount (Rs.)' : 'Total Amount (Rs.)'}
                   </Text>
                 </View>
                 <Text style={styles.totalAmountBox}>{document.subtotal?.toFixed(2)}</Text>
@@ -374,7 +383,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                   <View style={[styles.totalRow, { borderBottomWidth: 1, borderBottomColor: '#000000' }]}>
                     <View style={styles.totalLabelBox}>
                       <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
-                        {isInvoice ? `CGST (${lines?.[0]?.gst_rate ? lines[0].gst_rate / 2 : 9}%)` : 'Add: CGST'}
+                        {(isInvoice || isPO) ? `CGST (${lines?.[0]?.gst_rate ? lines[0].gst_rate / 2 : 9}%)` : 'Add: CGST'}
                       </Text>
                     </View>
                     <Text style={styles.totalAmountBox}>{document.cgst?.toFixed(2)}</Text>
@@ -382,7 +391,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                   <View style={[styles.totalRow, { borderBottomWidth: 1, borderBottomColor: '#000000' }]}>
                     <View style={styles.totalLabelBox}>
                       <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
-                        {isInvoice ? `SGST (${lines?.[0]?.gst_rate ? lines[0].gst_rate / 2 : 9}%)` : 'Add: SGST'}
+                        {(isInvoice || isPO) ? `SGST (${lines?.[0]?.gst_rate ? lines[0].gst_rate / 2 : 9}%)` : 'Add: SGST'}
                       </Text>
                     </View>
                     <Text style={styles.totalAmountBox}>{document.sgst?.toFixed(2)}</Text>
@@ -390,7 +399,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                   <View style={styles.totalRow}>
                     <View style={styles.totalLabelBox}>
                       <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
-                        {isInvoice ? 'Total Amount with taxes (Rs.)' : 'Grand Total Amount (Rs.)'}
+                        {(isInvoice || isPO) ? 'Total Amount with taxes (Rs.)' : 'Grand Total Amount (Rs.)'}
                       </Text>
                     </View>
                     <Text style={styles.totalAmountBox}>{document.total?.toFixed(2)}</Text>
@@ -401,17 +410,24 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
           )}
         </View>
 
-        {/* Amount in Words */}
-        {(isInvoice || isPO) && (
+        {/* Delivery Information for PO */}
+        {isPO && (
           <View style={{ marginBottom: 20 }}>
-            {isInvoice ? (
-              <Text style={{ fontFamily: 'Helvetica' }}>Amount in words- Rupees {numberToWordsIndian(document.total)} only.</Text>
-            ) : (
-              <>
-                <Text style={{ fontFamily: 'Helvetica-Bold' }}>Amount in words:</Text>
-                <Text>{numberToWordsIndian(document.total)}</Text>
-              </>
-            )}
+            {document.metadata?.delivery_location && <Text>Delivery location: - {document.metadata.delivery_location}</Text>}
+            {document.metadata?.delivery_date && <Text>Delivery date: - {document.metadata.delivery_date}</Text>}
+          </View>
+        )}
+
+        {/* Amount in Words */}
+        {isInvoice && (
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontFamily: 'Helvetica' }}>Amount in words- Rupees {numberToWordsIndian(document.total)} only.</Text>
+          </View>
+        )}
+        {!isInvoice && !isPO && !isDC && !isWCC && (
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontFamily: 'Helvetica-Bold' }}>Amount in words:</Text>
+            <Text>{numberToWordsIndian(document.total)}</Text>
           </View>
         )}
 
@@ -425,8 +441,21 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
         {/* Terms & Conditions */}
         {document.metadata?.terms && !isWCC && (
           <View style={styles.termsBox}>
-            <Text style={{ fontFamily: 'Helvetica', marginBottom: 5 }}>Terms &amp; conditions:</Text>
-            <Text>{document.metadata.terms}</Text>
+            <Text style={{ fontFamily: isPO ? 'Helvetica' : 'Helvetica-Bold', marginBottom: 5 }}>{isPO ? 'Terms & conditions: -' : 'Terms & conditions:'}</Text>
+            {isPO ? (
+              <View style={{ marginLeft: 10 }}>
+                {document.metadata.terms.split('\n').map((term: string, i: number) => (
+                  term.trim() ? (
+                    <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+                      <Text style={{ width: 10 }}>•</Text>
+                      <Text style={{ flex: 1 }}>{term.trim()}</Text>
+                    </View>
+                  ) : null
+                ))}
+              </View>
+            ) : (
+              <Text>{document.metadata.terms}</Text>
+            )}
           </View>
         )}
 
