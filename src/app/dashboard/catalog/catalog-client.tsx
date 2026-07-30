@@ -10,6 +10,7 @@ type Item = {
   description: string
   unit: string
   rate: number
+  gst_rate: number
   category: string | null
 }
 
@@ -37,7 +38,7 @@ export function CatalogClient({
 
   const handleNew = () => {
     setEditingId('new')
-    setFormData({ unit: 'Nos', rate: 0 })
+    setFormData({ unit: 'Nos', rate: 0, gst_rate: 18 })
   }
 
   const handleCancel = () => {
@@ -53,6 +54,7 @@ export function CatalogClient({
       description: formData.description,
       unit: formData.unit,
       rate: Number(formData.rate) || 0,
+      gst_rate: Number(formData.gst_rate) || 18,
       category: formData.category || null,
     }
 
@@ -112,7 +114,8 @@ export function CatalogClient({
             <tr>
               <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">Description</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider w-32">Unit</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-brand-500 uppercase tracking-wider w-32">Rate (₹)</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider w-32">Rate (₹)</th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-brand-500 uppercase tracking-wider w-24">GST %</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider w-40">Category</th>
               <th className="px-6 py-4 text-right text-xs font-semibold text-brand-500 uppercase tracking-wider w-28">Actions</th>
             </tr>
@@ -128,6 +131,12 @@ export function CatalogClient({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input type="number" step="0.01" placeholder="Rate" className="w-full text-sm border border-brand-200 rounded-lg p-2 text-right focus:ring-accent-500 focus:border-accent-500 shadow-sm" value={formData.rate || ''} onChange={e => setFormData({...formData, rate: parseFloat(e.target.value) || 0})} />
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <select className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500 shadow-sm" value={formData.gst_rate || 18} onChange={e => setFormData({...formData, gst_rate: Number(e.target.value)})}>
+                    <option value={18}>18%</option>
+                    <option value={9}>9%</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input type="text" placeholder="Category" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500 shadow-sm" value={formData.category || ''} onChange={e => setFormData({...formData, category: e.target.value})} />
@@ -152,6 +161,12 @@ export function CatalogClient({
                     <input type="number" step="0.01" className="w-full text-sm border border-brand-200 rounded-lg p-2 text-right focus:ring-accent-500 focus:border-accent-500 shadow-sm" value={formData.rate !== undefined ? formData.rate : ''} onChange={e => setFormData({...formData, rate: parseFloat(e.target.value) || 0})} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <select className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500 shadow-sm" value={formData.gst_rate !== undefined ? formData.gst_rate : 18} onChange={e => setFormData({...formData, gst_rate: Number(e.target.value)})}>
+                      <option value={18}>18%</option>
+                      <option value={9}>9%</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <input type="text" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500 shadow-sm" value={formData.category || ''} onChange={e => setFormData({...formData, category: e.target.value})} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
@@ -164,6 +179,7 @@ export function CatalogClient({
                   <td className="px-6 py-4 text-sm font-semibold text-brand-900 whitespace-pre-wrap leading-relaxed">{record.description}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-600">{record.unit}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-900 text-right font-bold">₹ {record.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-900 text-center">{record.gst_rate}%</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-500">
                     {record.category ? (
                       <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-brand-100/50 text-brand-700 border border-brand-200/50">

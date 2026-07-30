@@ -14,6 +14,7 @@ type LineItem = {
   quantity: number
   unit: string
   rate: number
+  gst_rate: number
   amount: number
   make?: string | null
 }
@@ -70,7 +71,7 @@ export function DocumentEditor({
         ...initialData,
         document_date: initialData.document_date || format(new Date(), 'yyyy-MM-dd'),
         metadata: initialData.metadata || {},
-        lines: initialLines.length > 0 ? initialLines : [{ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, amount: 0 }],
+        lines: initialLines.length > 0 ? initialLines.map(l => ({...l, gst_rate: l.gst_rate ?? 18})) : [{ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, gst_rate: 18, amount: 0 }],
       }
     }
     
@@ -89,7 +90,7 @@ export function DocumentEditor({
       cgst: 0,
       sgst: 0,
       total: 0,
-      lines: [{ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, amount: 0 }],
+      lines: [{ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, gst_rate: 18, amount: 0 }],
     }
   }, [initialData, initialLines, isNew])
 
@@ -109,11 +110,21 @@ export function DocumentEditor({
   // Live Calculations
   useEffect(() => {
     let newSubtotal = 0
+    let cgst = 0
+    let sgst = 0
+
     const updatedLines = getValues('lines').map(line => {
       // WCC and DC don't use rates usually, but we keep the math generic. 
       // If rate is 0, amount is 0.
       const amount = (line.quantity || 0) * (line.rate || 0)
       newSubtotal += amount
+      
+      if (watchType === 'invoice' || watchType === 'po') {
+        const rate = Number(line.gst_rate) || 18
+        cgst += (amount * (rate / 100)) / 2
+        sgst += (amount * (rate / 100)) / 2
+      }
+      
       return { ...line, amount }
     })
 
@@ -126,13 +137,8 @@ export function DocumentEditor({
     }
 
     // Taxes only apply to Invoice and PO in the layout requirements
-    let cgst = 0
-    let sgst = 0
     let total = newSubtotal
-
     if (watchType === 'invoice' || watchType === 'po') {
-      cgst = newSubtotal * 0.09
-      sgst = newSubtotal * 0.09
       total = newSubtotal + cgst + sgst
     }
 
@@ -167,6 +173,7 @@ export function DocumentEditor({
       setValue(`lines.${index}.description`, item.description, { shouldDirty: true })
       setValue(`lines.${index}.unit`, item.unit, { shouldDirty: true })
       setValue(`lines.${index}.rate`, item.rate, { shouldDirty: true })
+      setValue(`lines.${index}.gst_rate`, item.gst_rate !== undefined ? item.gst_rate : 18, { shouldDirty: true })
     }
   }
 
@@ -235,6 +242,7 @@ export function DocumentEditor({
         quantity: line.quantity,
         unit: line.unit,
         rate: line.rate,
+        gst_rate: line.gst_rate,
         amount: line.amount,
         make: line.make,
         sort_order: index,
@@ -387,7 +395,7 @@ export function DocumentEditor({
               <h2 className="text-lg font-semibold text-brand-900">Items</h2>
               <button
                 type="button"
-                onClick={() => append({ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, amount: 0 })}
+                onClick={() => append({ item_id: null, description: '', quantity: 1, unit: 'Nos', rate: 0, gst_rate: 18, amount: 0 })}
                 className="inline-flex items-center text-sm font-semibold text-brand-600 hover:text-brand-900 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-1" /> Add Row
@@ -405,6 +413,9 @@ export function DocumentEditor({
                     <th className="px-4 py-3 text-left text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">Unit</th>
                     {watchType !== 'dc' && watchType !== 'wcc' && (
                       <th className="px-4 py-3 text-right text-xs font-bold text-brand-500 w-32 uppercase tracking-wider">Rate</th>
+                    )}
+                    {watchType !== 'dc' && watchType !== 'wcc' && (
+                      <th className="px-4 py-3 text-center text-xs font-bold text-brand-500 w-24 uppercase tracking-wider">GST %</th>
                     )}
                     {watchType !== 'dc' && watchType !== 'wcc' && (
                       <th className="px-4 py-3 text-right text-xs font-bold text-brand-500 w-32 uppercase tracking-wider">Amount</th>
@@ -452,6 +463,14 @@ export function DocumentEditor({
                       {watchType !== 'dc' && watchType !== 'wcc' && (
                         <td className="px-4 py-3">
                           <input type="number" step="0.01" {...register(`lines.${index}.rate`)} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-3 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-right mt-11 shadow-sm transition-all" />
+                        </td>
+                      )}
+                      {watchType !== 'dc' && watchType !== 'wcc' && (
+                        <td className="px-4 py-3">
+                          <select {...register(`lines.${index}.gst_rate`)} className="block w-full rounded-xl border border-brand-200 bg-white/50 px-2 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 mt-11 shadow-sm transition-all text-center">
+                            <option value={18}>18%</option>
+                            <option value={9}>9%</option>
+                          </select>
                         </td>
                       )}
                       {watchType !== 'dc' && watchType !== 'wcc' && (
@@ -533,11 +552,11 @@ export function DocumentEditor({
                   {(watchType === 'invoice' || watchType === 'po') && (
                     <>
                       <div className="flex justify-between text-white/70">
-                        <span>CGST (9%)</span>
+                        <span>Total CGST</span>
                         <span>₹ {formValues.cgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
                       </div>
                       <div className="flex justify-between text-white/70">
-                        <span>SGST (9%)</span>
+                        <span>Total SGST</span>
                         <span>₹ {formValues.sgst?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
                       </div>
                     </>

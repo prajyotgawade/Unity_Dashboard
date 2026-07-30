@@ -53,6 +53,7 @@ CREATE TABLE public.items (
     description TEXT NOT NULL,
     unit TEXT NOT NULL,
     rate NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    gst_rate NUMERIC(5, 2) NOT NULL DEFAULT 18,
     category TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -92,6 +93,7 @@ CREATE TABLE public.document_lines (
     quantity NUMERIC(10, 2) NOT NULL DEFAULT 1,
     unit TEXT NOT NULL,
     rate NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    gst_rate NUMERIC(5, 2) NOT NULL DEFAULT 18,
     amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
     sort_order INTEGER NOT NULL DEFAULT 0,
     make TEXT, -- specifically for WCC
@@ -116,7 +118,12 @@ CREATE POLICY "Enable ALL for authenticated users only" ON public.documents FOR 
 CREATE POLICY "Enable ALL for authenticated users only" ON public.document_lines FOR ALL TO authenticated USING (true);
 
 -- Storage bucket for logos and signatures
-insert into storage.buckets (id, name, public) values ('assets', 'assets', true);
+insert into storage.buckets (id, name, public) values ('assets', 'assets', true) ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Enable read access for all users" ON storage.objects;
+DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON storage.objects;
+DROP POLICY IF EXISTS "Enable update for authenticated users only" ON storage.objects;
+DROP POLICY IF EXISTS "Enable delete for authenticated users only" ON storage.objects;
 
 CREATE POLICY "Enable read access for all users" ON storage.objects FOR SELECT USING (bucket_id = 'assets');
 CREATE POLICY "Enable insert for authenticated users only" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'assets');

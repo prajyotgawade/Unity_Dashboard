@@ -296,11 +296,11 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                     <Text style={styles.totalValue}>{document.subtotal?.toFixed(2)}</Text>
                   </View>
                   <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>CGST (9%)</Text>
+                    <Text style={styles.totalLabel}>Total CGST</Text>
                     <Text style={styles.totalValue}>{document.cgst?.toFixed(2)}</Text>
                   </View>
                   <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>SGST (9%)</Text>
+                    <Text style={styles.totalLabel}>Total SGST</Text>
                     <Text style={styles.totalValue}>{document.sgst?.toFixed(2)}</Text>
                   </View>
                 </>
