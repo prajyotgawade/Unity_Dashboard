@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { Plus, Trash2, Save, ArrowRight, Loader2, ChevronDown, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 type LineItem = {
   id?: string
@@ -350,18 +351,38 @@ export function DocumentEditor({
               {watchType === 'po' ? (
                 <div>
                   <label className="block text-sm font-semibold text-brand-700 mb-1.5">Supplier *</label>
-                  <select {...register('supplier_id')} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm">
-                    <option value="">Select a supplier...</option>
-                    {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
+                  <Controller
+                    control={control}
+                    name="supplier_id"
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <SearchableSelect
+                        options={suppliers.map(s => ({ value: s.id, label: s.name }))}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Search a supplier..."
+                        required
+                      />
+                    )}
+                  />
                 </div>
               ) : (
                 <div>
                   <label className="block text-sm font-semibold text-brand-700 mb-1.5">Client *</label>
-                  <select {...register('client_id')} required className="block w-full rounded-xl border border-brand-200 bg-white/50 px-4 py-2 text-sm focus:bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all shadow-sm">
-                    <option value="">Select a client...</option>
-                    {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                  <Controller
+                    control={control}
+                    name="client_id"
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <SearchableSelect
+                        options={clients.map(c => ({ value: c.id, label: c.name }))}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Search a client..."
+                        required
+                      />
+                    )}
+                  />
                 </div>
               )}
 
@@ -434,17 +455,26 @@ export function DocumentEditor({
                       <td className="px-4 py-3 text-sm text-brand-500 pt-5">{index + 1}</td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-2">
-                          <select
-                            {...register(`lines.${index}.item_id`)}
-                            onChange={(e) => {
-                              setValue(`lines.${index}.item_id`, e.target.value)
-                              handleItemSelect(index, e.target.value)
-                            }}
-                            className="block w-full rounded-xl border border-brand-200 px-3 py-2 text-sm focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-brand-600 bg-brand-50/50 shadow-sm transition-all"
-                          >
-                            <option value="">-- Custom Item --</option>
-                            {items.map(i => <option key={i.id} value={i.id}>{i.description.substring(0, 40)}...</option>)}
-                          </select>
+                          <Controller
+                            control={control}
+                            name={`lines.${index}.item_id`}
+                            render={({ field }) => (
+                              <SearchableSelect
+                                options={items.map(i => ({ 
+                                  value: i.id, 
+                                  label: i.description.length > 50 ? i.description.substring(0, 50) + '...' : i.description,
+                                  description: `Rate: ₹${i.rate} | Unit: ${i.unit}` 
+                                }))}
+                                value={field.value}
+                                onChange={(val) => {
+                                  field.onChange(val)
+                                  handleItemSelect(index, val)
+                                }}
+                                placeholder="-- Custom Item --"
+                                className="bg-brand-50/50"
+                              />
+                            )}
+                          />
                           <textarea
                             {...register(`lines.${index}.description`)}
                             rows={2}
