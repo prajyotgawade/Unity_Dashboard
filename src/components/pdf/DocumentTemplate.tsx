@@ -236,11 +236,12 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
           <View style={styles.topLeft}>
             {!isPO && !isWCC && (
               <>
-                <Text style={{ marginBottom: 3 }}>To,</Text>
+                <Text style={{ marginBottom: 3 }}>{isInvoice ? 'Bill to,' : 'To,'}</Text>
                 {client?.name && <Text style={{ marginBottom: 2 }}>{client.name}</Text>}
                 {client?.address && <Text style={{ marginBottom: 2 }}>{client.address}</Text>}
-                {client?.kind_attention && <Text style={{ marginBottom: 2 }}>Kind Attention- {client.kind_attention}</Text>}
-                {client?.gstin && <Text style={{ marginTop: 2 }}>GSTIN: {client.gstin}</Text>}
+                {client?.gstin && <Text style={{ marginTop: 2 }}>{isInvoice ? 'GSTIN- ' : 'GSTIN: '}{client.gstin}</Text>}
+                {client?.kind_attention && <Text style={{ marginBottom: 2 }}>{isInvoice ? 'Kind attention- ' : 'Kind Attention- '}{client.kind_attention}</Text>}
+                {isInvoice && client?.email && <Text style={{ marginTop: 2 }}>Email Id- {client.email}</Text>}
               </>
             )}
             
@@ -276,16 +277,16 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             {!isWCC && (
               <>
                 <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>Date:</Text>
-                  <Text style={styles.metaValue}>- {format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
+                  <Text style={styles.metaLabel}>{isInvoice ? 'Date-' : 'Date:'}</Text>
+                  <Text style={styles.metaValue}>{isInvoice ? ' ' : '- '}{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
                 </View>
                 <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>{isPO ? 'PO No:' : isInvoice ? 'Invoice No:' : isDC ? 'Challan No:' : 'Quotation:'}</Text>
+                  <Text style={[styles.metaLabel, isInvoice ? { width: 85 } : {}]}>{isPO ? 'PO No:' : isInvoice ? 'Invoice number:' : isDC ? 'Challan No:' : 'Quotation:'}</Text>
                   <Text style={styles.metaValue}>- {document.document_number}</Text>
                 </View>
                 {document.reference_number && (
                   <View style={styles.metaRow}>
-                    <Text style={styles.metaLabel}>Ref:</Text>
+                    <Text style={[styles.metaLabel, isInvoice ? { width: 105 } : {}]}>{isInvoice ? `${client?.name?.split(' ')[0] || ''} PO number:` : 'Ref:'}</Text>
                     <Text style={styles.metaValue}>- {document.reference_number}</Text>
                   </View>
                 )}
@@ -310,7 +311,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
         {/* Subject */}
         {document.subject && (
           <View style={styles.subjectLine}>
-            <Text style={styles.subjectLabel}>Sub: </Text>
+            <Text style={styles.subjectLabel}>{isInvoice ? '' : 'Sub: '}</Text>
             <Text style={styles.subjectValue}>{document.subject}</Text>
           </View>
         )}
@@ -330,9 +331,8 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             {/* Conditional Columns */}
             {!isDC && !isWCC && (
               <>
-                <Text style={[styles.tableCell, styles.colRate]}>Rate per{"\n"}unit (Rs.)</Text>
-                {isInvoice && <Text style={[styles.tableCell, { width: '8%', textAlign: 'center' }]}>GST%</Text>}
-                <Text style={[styles.tableCell, styles.colAmt]}>Total{"\n"}Amount{"\n"}(Rs.)</Text>
+                <Text style={[styles.tableCell, styles.colRate]}>{isInvoice ? 'Rate (Rs. Per unit)' : 'Rate per\nunit (Rs.)'}</Text>
+                <Text style={[styles.tableCell, styles.colAmt]}>{isInvoice ? 'Amount (Rs.)' : 'Total\nAmount\n(Rs.)'}</Text>
               </>
             )}
           </View>
@@ -349,7 +349,6 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
               {!isDC && !isWCC && (
                 <>
                   <Text style={[styles.tableCell, styles.colRateAlignRight]}>{line.rate?.toFixed(2)}</Text>
-                  {isInvoice && <Text style={[styles.tableCell, { width: '8%', textAlign: 'center' }]}>{line.gst_rate || 18}%</Text>}
                   <Text style={[styles.tableCell, styles.colAmtAlignRight]}>{line.amount?.toFixed(2)}</Text>
                 </>
               )}
@@ -363,7 +362,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
               <View style={[styles.totalRow, (isInvoice || isPO) ? { borderBottomWidth: 1, borderBottomColor: '#000000' } : {}]}>
                 <View style={styles.totalLabelBox}>
                   <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
-                    {(isInvoice || isPO) ? 'Sub Total Amount (Rs.)' : 'Total Amount (Rs.)'}
+                    {isInvoice ? 'Total Amount' : (isInvoice || isPO) ? 'Sub Total Amount (Rs.)' : 'Total Amount (Rs.)'}
                   </Text>
                 </View>
                 <Text style={styles.totalAmountBox}>{document.subtotal?.toFixed(2)}</Text>
@@ -374,19 +373,25 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                 <>
                   <View style={[styles.totalRow, { borderBottomWidth: 1, borderBottomColor: '#000000' }]}>
                     <View style={styles.totalLabelBox}>
-                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>Add: CGST</Text>
+                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
+                        {isInvoice ? `CGST (${lines?.[0]?.gst_rate ? lines[0].gst_rate / 2 : 9}%)` : 'Add: CGST'}
+                      </Text>
                     </View>
                     <Text style={styles.totalAmountBox}>{document.cgst?.toFixed(2)}</Text>
                   </View>
                   <View style={[styles.totalRow, { borderBottomWidth: 1, borderBottomColor: '#000000' }]}>
                     <View style={styles.totalLabelBox}>
-                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>Add: SGST</Text>
+                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
+                        {isInvoice ? `SGST (${lines?.[0]?.gst_rate ? lines[0].gst_rate / 2 : 9}%)` : 'Add: SGST'}
+                      </Text>
                     </View>
                     <Text style={styles.totalAmountBox}>{document.sgst?.toFixed(2)}</Text>
                   </View>
                   <View style={styles.totalRow}>
                     <View style={styles.totalLabelBox}>
-                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>Grand Total Amount (Rs.)</Text>
+                      <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9 }}>
+                        {isInvoice ? 'Total Amount with taxes (Rs.)' : 'Grand Total Amount (Rs.)'}
+                      </Text>
                     </View>
                     <Text style={styles.totalAmountBox}>{document.total?.toFixed(2)}</Text>
                   </View>
@@ -399,8 +404,14 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
         {/* Amount in Words */}
         {(isInvoice || isPO) && (
           <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontFamily: 'Helvetica-Bold' }}>Amount in words:</Text>
-            <Text>{numberToWordsIndian(document.total)}</Text>
+            {isInvoice ? (
+              <Text style={{ fontFamily: 'Helvetica' }}>Amount in words- Rupees {numberToWordsIndian(document.total)} only.</Text>
+            ) : (
+              <>
+                <Text style={{ fontFamily: 'Helvetica-Bold' }}>Amount in words:</Text>
+                <Text>{numberToWordsIndian(document.total)}</Text>
+              </>
+            )}
           </View>
         )}
 
@@ -421,11 +432,22 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
 
         {/* Bank Details for Invoice */}
         {isInvoice && (
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>Bank Account Details:</Text>
-            <Text>Bank Name: {settings.bank_name}</Text>
-            <Text>Account No: {settings.bank_account_no}</Text>
-            <Text>IFSC Code: {settings.bank_ifsc}</Text>
+          <View style={{ marginBottom: 20, marginLeft: 20 }}>
+            <Text style={{ fontFamily: 'Helvetica', marginBottom: 5 }}>Bank Account Details:</Text>
+            <View style={{ marginLeft: 15 }}>
+              <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                <Text style={{ width: 10 }}>•</Text>
+                <Text>Bank Name: {settings.bank_name}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                <Text style={{ width: 10 }}>•</Text>
+                <Text>Account no: {settings.bank_account_no}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                <Text style={{ width: 10 }}>•</Text>
+                <Text>IFSC code : {settings.bank_ifsc}</Text>
+              </View>
+            </View>
           </View>
         )}
 
