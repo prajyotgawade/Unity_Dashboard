@@ -21,6 +21,7 @@ const settingsSchema = z.object({
   email_other: z.string().email('Invalid email'),
   logo_url: z.string().nullable().optional(),
   signature_url: z.string().nullable().optional(),
+  stamp_url: z.string().nullable().optional(),
 })
 
 type SettingsValues = z.infer<typeof settingsSchema>
@@ -30,6 +31,7 @@ export function SettingsForm({ initialData }: { initialData: Partial<SettingsVal
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [uploadingSignature, setUploadingSignature] = useState(false)
+  const [uploadingStamp, setUploadingStamp] = useState(false)
   const supabase = createClient()
 
   const {
@@ -53,13 +55,14 @@ export function SettingsForm({ initialData }: { initialData: Partial<SettingsVal
       email_other: initialData.email_other || 'sales@unitytech.in',
       logo_url: initialData.logo_url || null,
       signature_url: initialData.signature_url || null,
+      stamp_url: initialData.stamp_url || null,
       id: initialData.id,
     },
   })
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: 'logo_url' | 'signature_url',
+    field: 'logo_url' | 'signature_url' | 'stamp_url',
     setUploading: (val: boolean) => void
   ) => {
     const file = e.target.files?.[0]
@@ -113,6 +116,7 @@ export function SettingsForm({ initialData }: { initialData: Partial<SettingsVal
 
   const logoUrl = watch('logo_url')
   const signatureUrl = watch('signature_url')
+  const stampUrl = watch('stamp_url')
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -203,7 +207,7 @@ export function SettingsForm({ initialData }: { initialData: Partial<SettingsVal
         </div>
       </div>
 
-      <div className="border-t border-brand-100 pt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="border-t border-brand-100 pt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <label className="block text-sm font-medium text-brand-700 mb-2">Company Logo</label>
           <div className="flex items-center gap-4">
@@ -221,7 +225,7 @@ export function SettingsForm({ initialData }: { initialData: Partial<SettingsVal
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-brand-700 mb-2">Signature / Stamp</label>
+          <label className="block text-sm font-medium text-brand-700 mb-2">Signature</label>
           <div className="flex items-center gap-4">
             {signatureUrl ? (
               <img src={signatureUrl} alt="Signature" className="h-16 w-16 object-contain border border-brand-200 rounded p-1" />
@@ -230,8 +234,24 @@ export function SettingsForm({ initialData }: { initialData: Partial<SettingsVal
             )}
             <label className="cursor-pointer bg-white px-3 py-2 border border-brand-300 rounded-md shadow-sm text-sm font-medium text-brand-700 hover:bg-brand-50 focus:outline-none flex items-center gap-2">
               {uploadingSignature ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              Upload Stamp
+              Upload Signature
               <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'signature_url', setUploadingSignature)} disabled={uploadingSignature} />
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-brand-700 mb-2">Company Stamp</label>
+          <div className="flex items-center gap-4">
+            {stampUrl ? (
+              <img src={stampUrl} alt="Stamp" className="h-16 w-16 object-contain border border-brand-200 rounded p-1" />
+            ) : (
+              <div className="h-16 w-16 bg-brand-50 border border-brand-200 rounded flex items-center justify-center text-xs text-brand-400">None</div>
+            )}
+            <label className="cursor-pointer bg-white px-3 py-2 border border-brand-300 rounded-md shadow-sm text-sm font-medium text-brand-700 hover:bg-brand-50 focus:outline-none flex items-center gap-2">
+              {uploadingStamp ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              Upload Stamp
+              <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'stamp_url', setUploadingStamp)} disabled={uploadingStamp} />
             </label>
           </div>
         </div>

@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   colUnit: { width: '10%', textAlign: 'center' },
   colRate: { width: '14%', textAlign: 'center' },
   colAmt: { width: '16%', textAlign: 'center', borderRightWidth: 0 },
-  
+
   colRateAlignRight: { width: '14%', textAlign: 'right' },
   colAmtAlignRight: { width: '16%', textAlign: 'right', borderRightWidth: 0 },
 
@@ -155,13 +155,18 @@ const styles = StyleSheet.create({
   },
   signatureBox: {
     alignItems: 'center',
-    width: 200,
   },
   stampImage: {
     width: 140,
     height: 60,
     objectFit: 'contain',
     marginVertical: 10,
+  },
+  companyStampImage: {
+    width: 100,
+    height: 100,
+    objectFit: 'contain',
+    marginRight: 10,
   },
   footerLine: {
     position: 'absolute',
@@ -208,7 +213,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        
+
         {/* Header Block */}
         <View style={styles.headerContainer}>
           {settings.logo_url && (
@@ -224,7 +229,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.headerLine} />
 
         {/* Title */}
@@ -247,7 +252,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                 {isInvoice && client?.email && <Text style={{ marginTop: 2 }}>Email Id- {client.email}</Text>}
               </>
             )}
-            
+
             {isPO && (
               <>
                 <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 3 }}>Supplier Name & Address: -</Text>
@@ -259,30 +264,30 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
 
             {isWCC && (
               <View style={{ marginBottom: 15 }}>
-                 <View style={styles.metaRow}>
-                   <Text style={[styles.metaLabel, { width: 145 }]}>Name of Client: -</Text>
-                   <Text style={styles.metaValue}>{client?.name}</Text>
-                 </View>
-                 <View style={styles.metaRow}>
-                   <Text style={[styles.metaLabel, { width: 145 }]}>Name of work/Project:-</Text>
-                   <Text style={styles.metaValue}>{document.subject}</Text>
-                 </View>
-                 <View style={styles.metaRow}>
-                   <Text style={[styles.metaLabel, { width: 145 }]}>Work Order number: -</Text>
-                   <Text style={styles.metaValue}>{document.reference_number || '-'}</Text>
-                 </View>
-                 <View style={styles.metaRow}>
-                   <Text style={[styles.metaLabel, { width: 145 }]}>Work Order date:-</Text>
-                   <Text style={styles.metaValue}>{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
-                 </View>
-                 <View style={styles.metaRow}>
-                   <Text style={[styles.metaLabel, { width: 145 }]}>Work Order value:-</Text>
-                   <Text style={styles.metaValue}>{document.metadata?.work_order_value || '-'}</Text>
-                 </View>
-                 <View style={[styles.metaRow, { marginTop: 15 }]}>
-                   <Text style={[styles.metaLabel, { width: 145 }]}>Work Period:-</Text>
-                   <Text style={styles.metaValue}>{document.metadata?.work_period || '-'}</Text>
-                 </View>
+                <View style={styles.metaRow}>
+                  <Text style={[styles.metaLabel, { width: 145 }]}>Name of Client: -</Text>
+                  <Text style={styles.metaValue}>{client?.name}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={[styles.metaLabel, { width: 145 }]}>Name of work/Project:-</Text>
+                  <Text style={styles.metaValue}>{document.subject}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={[styles.metaLabel, { width: 145 }]}>Work Order number: -</Text>
+                  <Text style={styles.metaValue}>{document.reference_number || '-'}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={[styles.metaLabel, { width: 145 }]}>Work Order date:-</Text>
+                  <Text style={styles.metaValue}>{format(new Date(document.document_date), 'dd/MM/yyyy')}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={[styles.metaLabel, { width: 145 }]}>Work Order value:-</Text>
+                  <Text style={styles.metaValue}>{document.metadata?.work_order_value || '-'}</Text>
+                </View>
+                <View style={[styles.metaRow, { marginTop: 15 }]}>
+                  <Text style={[styles.metaLabel, { width: 145 }]}>Work Period:-</Text>
+                  <Text style={styles.metaValue}>{document.metadata?.work_period || '-'}</Text>
+                </View>
               </View>
             )}
           </View>
@@ -305,7 +310,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
                     <Text style={styles.metaValue}>- {document.reference_number}</Text>
                   </View>
                 )}
-                
+
                 {isPO && (
                   <View style={{ marginTop: 15 }}>
                     <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 3 }}>Buyer Name & Address: -</Text>
@@ -338,7 +343,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             {isWCC && <Text style={[styles.tableCell, styles.colMake]}>Make</Text>}
             <Text style={[styles.tableCell, styles.colQty]}>{isWCC ? 'Qty' : 'Quantity'}</Text>
             {!isWCC && <Text style={[styles.tableCell, styles.colUnit]}>Unit</Text>}
-            
+
             {/* Conditional Columns */}
             {!isDC && !isWCC && (
               <>
@@ -356,7 +361,7 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
               {isWCC && <Text style={[styles.tableCell, styles.colMake]}>{line.make || '-'}</Text>}
               <Text style={[styles.tableCell, styles.colQty]}>{isWCC ? `${line.quantity} ${line.unit}` : line.quantity}</Text>
               {!isWCC && <Text style={[styles.tableCell, styles.colUnit]}>{line.unit}</Text>}
-              
+
               {!isDC && !isWCC && (
                 <>
                   <Text style={[styles.tableCell, styles.colRateAlignRight]}>{line.rate?.toFixed(2)}</Text>
@@ -435,19 +440,19 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
 
         {isWCC && (
           <View style={{ marginBottom: 20 }}>
-             <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>2. Scope of Work Completed</Text>
-             {document.metadata?.terms ? (
-               <View style={{ marginLeft: 10 }}>
-                 {document.metadata.terms.split('\n').map((term: string, i: number) => (
-                   term.trim() ? (
-                     <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
-                       <Text style={{ width: 10 }}>•</Text>
-                       <Text style={{ flex: 1 }}>{term.trim()}</Text>
-                     </View>
-                   ) : null
-                 ))}
-               </View>
-             ) : null}
+            <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>2. Scope of Work Completed</Text>
+            {document.metadata?.terms ? (
+              <View style={{ marginLeft: 10 }}>
+                {document.metadata.terms.split('\n').map((term: string, i: number) => (
+                  term.trim() ? (
+                    <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+                      <Text style={{ width: 10 }}>•</Text>
+                      <Text style={{ flex: 1 }}>{term.trim()}</Text>
+                    </View>
+                  ) : null
+                ))}
+              </View>
+            ) : null}
           </View>
         )}
 
@@ -507,6 +512,11 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
         {/* Signatures */}
         {!isWCC && (
           <View style={styles.signatureBlock}>
+            {settings.stamp_url && (
+              <View style={{ justifyContent: 'center' }}>
+                <Image src={settings.stamp_url} style={styles.companyStampImage} />
+              </View>
+            )}
             <View style={styles.signatureBox}>
               <Text style={{ marginBottom: 5 }}>Thanks &amp; Regards</Text>
               {settings.signature_url ? (
@@ -518,17 +528,24 @@ export const DocumentTemplate = ({ document, settings, client, supplier, lines }
             </View>
           </View>
         )}
-        
+
         {isWCC && (
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, marginBottom: 40 }}>
-            <View style={{ width: 250 }}>
-              <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>Regards,</Text>
-              {settings.signature_url ? (
-                <Image src={settings.signature_url} style={{ width: 100, height: 50, objectFit: 'contain', marginVertical: 5 }} />
-              ) : (
-                <View style={{ height: 60 }} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, marginBottom: 40, alignItems: 'flex-end' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+              {settings.stamp_url && (
+                <View style={{ marginRight: 15 }}>
+                  <Image src={settings.stamp_url} style={{ width: 80, height: 80, objectFit: 'contain' }} />
+                </View>
               )}
-              <Text style={{ fontFamily: 'Helvetica-Bold' }}>{settings.business_name}</Text>
+              <View>
+                <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 5 }}>Regards,</Text>
+                {settings.signature_url ? (
+                  <Image src={settings.signature_url} style={{ width: 100, height: 50, objectFit: 'contain', marginVertical: 5 }} />
+                ) : (
+                  <View style={{ height: 60 }} />
+                )}
+                <Text style={{ fontFamily: 'Helvetica-Bold' }}>{settings.business_name}</Text>
+              </View>
             </View>
             <View style={{ width: 200, alignItems: 'center', justifyContent: 'flex-end' }}>
               <Text style={{ fontFamily: 'Helvetica-Bold' }}>{client?.name ? `${client.name.split(',')[0].split(' ')[0]} Representative` : 'Client Representative'}</Text>
