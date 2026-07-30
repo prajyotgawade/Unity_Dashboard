@@ -33,6 +33,7 @@ CREATE TABLE public.clients (
     gstin TEXT,
     kind_attention TEXT,
     email TEXT,
+    mobile_number TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -43,6 +44,7 @@ CREATE TABLE public.suppliers (
     name TEXT NOT NULL,
     address TEXT,
     gstin TEXT,
+    mobile_number TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

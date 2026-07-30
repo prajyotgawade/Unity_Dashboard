@@ -12,6 +12,7 @@ type Client = {
   gstin: string | null
   kind_attention: string | null
   email: string | null
+  mobile_number: string | null
 }
 
 type Supplier = {
@@ -19,6 +20,7 @@ type Supplier = {
   name: string
   address: string | null
   gstin: string | null
+  mobile_number: string | null
 }
 
 export function ContactsClient({
@@ -70,6 +72,7 @@ export function ContactsClient({
       gstin: formData.gstin || null,
       kind_attention: formData.kind_attention || null,
       email: formData.email || null,
+      mobile_number: formData.mobile_number || null,
     }
 
     if (editingId === 'new') {
@@ -90,6 +93,7 @@ export function ContactsClient({
       name: formData.name,
       address: formData.address || null,
       gstin: formData.gstin || null,
+      mobile_number: formData.mobile_number || null,
     }
 
     if (editingId === 'new') {
@@ -173,10 +177,10 @@ export function ContactsClient({
               <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">Name</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">GSTIN</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">Address</th>
-              {activeTab === 'clients' && (
-                <>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">Attention / Email</th>
-                </>
+              {activeTab === 'clients' ? (
+                <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">Contact Details</th>
+              ) : (
+                <th className="px-6 py-4 text-left text-xs font-semibold text-brand-500 uppercase tracking-wider">Mobile Number</th>
               )}
               <th className="px-6 py-4 text-right text-xs font-semibold text-brand-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -193,10 +197,15 @@ export function ContactsClient({
                 <td className="px-6 py-4">
                   <input type="text" placeholder="Address" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.address || ''} onChange={e => setFormData({...formData, address: e.target.value})} />
                 </td>
-                {activeTab === 'clients' && (
-                  <td className="px-6 py-4 text-sm">
-                    <input type="text" placeholder="Kind Attention" className="w-full text-sm border border-brand-200 rounded-lg p-2 mb-2 focus:ring-accent-500 focus:border-accent-500" value={formData.kind_attention || ''} onChange={e => setFormData({...formData, kind_attention: e.target.value})} />
+                {activeTab === 'clients' ? (
+                  <td className="px-6 py-4 text-sm flex flex-col gap-2">
+                    <input type="text" placeholder="Kind Attention" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.kind_attention || ''} onChange={e => setFormData({...formData, kind_attention: e.target.value})} />
                     <input type="email" placeholder="Email" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.email || ''} onChange={e => setFormData({...formData, email: e.target.value})} />
+                    <input type="text" placeholder="Mobile Number" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.mobile_number || ''} onChange={e => setFormData({...formData, mobile_number: e.target.value})} />
+                  </td>
+                ) : (
+                  <td className="px-6 py-4">
+                    <input type="text" placeholder="Mobile Number" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.mobile_number || ''} onChange={e => setFormData({...formData, mobile_number: e.target.value})} />
                   </td>
                 )}
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
@@ -218,10 +227,15 @@ export function ContactsClient({
                   <td className="px-6 py-4">
                     <input type="text" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.address || ''} onChange={e => setFormData({...formData, address: e.target.value})} />
                   </td>
-                  {activeTab === 'clients' && (
-                    <td className="px-6 py-4 text-sm">
-                      <input type="text" placeholder="Attention" className="w-full text-sm border border-brand-200 rounded-lg p-2 mb-2 focus:ring-accent-500 focus:border-accent-500" value={formData.kind_attention || ''} onChange={e => setFormData({...formData, kind_attention: e.target.value})} />
+                  {activeTab === 'clients' ? (
+                    <td className="px-6 py-4 text-sm flex flex-col gap-2">
+                      <input type="text" placeholder="Attention" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.kind_attention || ''} onChange={e => setFormData({...formData, kind_attention: e.target.value})} />
                       <input type="email" placeholder="Email" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.email || ''} onChange={e => setFormData({...formData, email: e.target.value})} />
+                      <input type="text" placeholder="Mobile Number" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.mobile_number || ''} onChange={e => setFormData({...formData, mobile_number: e.target.value})} />
+                    </td>
+                  ) : (
+                    <td className="px-6 py-4">
+                      <input type="text" placeholder="Mobile Number" className="w-full text-sm border border-brand-200 rounded-lg p-2 focus:ring-accent-500 focus:border-accent-500" value={formData.mobile_number || ''} onChange={e => setFormData({...formData, mobile_number: e.target.value})} />
                     </td>
                   )}
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
@@ -234,11 +248,14 @@ export function ContactsClient({
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-brand-900">{record.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-500">{record.gstin || '-'}</td>
                   <td className="px-6 py-4 text-sm font-medium text-brand-600 max-w-xs truncate">{record.address || '-'}</td>
-                  {activeTab === 'clients' && (
+                  {activeTab === 'clients' ? (
                     <td className="px-6 py-4 text-sm">
                       <div className="font-semibold text-brand-700">{(record as Client).kind_attention || '-'}</div>
                       <div className="text-xs text-brand-500 mt-0.5">{(record as Client).email || '-'}</div>
+                      <div className="text-xs text-brand-500 mt-0.5">{record.mobile_number || '-'}</div>
                     </td>
+                  ) : (
+                    <td className="px-6 py-4 text-sm font-medium text-brand-600">{record.mobile_number || '-'}</td>
                   )}
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button onClick={() => handleEdit(record)} disabled={editingId !== null} className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-brand-500 hover:bg-brand-100 hover:text-brand-900 disabled:opacity-50 transition-colors"><Edit2 className="h-4 w-4" /></button>
@@ -261,7 +278,7 @@ export function ContactsClient({
             )}
             {activeTab === 'suppliers' && filteredSuppliers.length === 0 && editingId !== 'new' && (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-sm text-brand-500">
+                <td colSpan={5} className="px-6 py-12 text-center text-sm text-brand-500">
                    <div className="flex flex-col items-center justify-center">
                     <Users className="h-10 w-10 text-brand-200 mb-3" />
                     <p className="font-medium">No suppliers found. Click "Add Supplier" to create one.</p>
